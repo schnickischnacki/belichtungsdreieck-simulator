@@ -34,7 +34,9 @@ Output Directory auf den Repo-Root. Keine Env-Variablen. Es ist eine statische D
 
 ## Einbau in Moodle
 
-### Variante A – iframe auf die Vercel-URL (empfohlen)
+Im Projekt ist **SCORM als Erstwahl dokumentiert** (`SecondBrain Thesis/06_Prototyp_Moodle/Gestaltungsmöglichkeiten Moodle.md`, Abschnitt 3.3 und Auswahllogik). Die iframe-Variante ist zusätzlich vorbereitet, hebt diese Entscheidung aber nicht auf – sie ist der einfachere Update-Weg, kostet dafür den automatischen Aktivitätsabschluss.
+
+### Variante A – iframe auf die Vercel-URL
 
 Text- und Medien-Feld, Editor auf Quellcode umschalten, einfügen und URL ersetzen:
 
@@ -54,7 +56,7 @@ Bei gelöster Aufgabe schickt das Widget
 `postMessage({type:'belichtungsdreieck:done', score:100})` ans Parent-Fenster – falls der
 Aktivitätsabschluss später daran gehängt werden soll.
 
-### Variante B – SCORM-Paket
+### Variante B – SCORM-Paket (dokumentierte Erstwahl)
 
 `index.html` + `scorm/imsmanifest.xml` (Manifest muss dabei ins Zip-Root) als ZIP packen und
 als SCORM-Lernpaket hochladen. Dann meldet das Widget Score und `lesson_status` per
@@ -72,7 +74,29 @@ Schärfentiefe wird aus der Blendenzahl, Bewegungsunschärfe aus der Belichtungs
 Modell, keine fotometrisch exakte Rechnung: Es soll die *Richtung* und den *Zielkonflikt*
 zeigen, nicht Messwerte liefern.
 
-## Offene Punkte
+## ⚠ Fachlicher Konflikt mit der Kursquelle – vor dem Einsatz klären
+
+Abgleich mit `Old Moodle Kurs/8_Richtig Belichten/Belichtungsdreieck.html` (16.07.2026):
+
+1. **Der Kurs lehrt kein Dreieck, sondern ein Fünfeck.** Die Quellseite nennt fünf Wege zu
+   weniger Belichtung: Licht im Set, ND-Filter, Blende, Belichtungszeit, ISO – und sagt
+   ausdrücklich, dass Punkt 1 und 2 „beim klassischen Belichtungsdreieck der Fotografie
+   nicht berücksichtigt" werden. Auch das Kursvideo heißt
+   `11_belichtungsdrei-vier-fünfeck.mp4`. Dieser Simulator hat nur die drei fotografischen
+   Regler – also das Modell, das der Kurs als unvollständig markiert.
+
+2. **Die Aufgabe trainiert gegen die Kursregel.** Die Quelle: „für ein cinematische
+   Seherfahrung wollen wir die Belichtungszeit unbedingt 1/50s behalten bei 25fps".
+   Die Aufgabe hier verlangt „friere die Bewegung ein" – lösbar erst ab ca. 1/250 s. Wer
+   löst, tut genau das, was der Kurs verbietet (180°-Regel).
+
+Optionen: **(A)** Belichtungszeit auf 1/50 s fixieren und stattdessen ND-Filter und Licht
+als Regler ergänzen – dann bildet der Simulator den Kursinhalt ab und der Zielkonflikt wird
+schärfer; die Rechnung bleibt dieselbe (jede Stufe = 1 Blende). **(B)** Als bewussten
+Vorschritt „so geht Fotografie" rahmen und die Erweiterung direkt danach setzen.
+Unverändert einbinden ist nicht empfohlen.
+
+## Weitere offene Punkte
 
 - **Gestaltung weicht ab:** Der Simulator ist dunkel (`#0f1115`) und nutzt nicht die
   Farbwelt der übrigen Moodle-Inline-Seiten (Cream `#f6f4f0` / Akzentorange `#c1651f`).
@@ -80,5 +104,5 @@ zeigen, nicht Messwerte liefern.
   den visuellen Faden. Vor dem Livegang entscheiden: angleichen oder bewusst absetzen.
 - Kein Narrativ-Anschluss an Peter Z. / Episode 3 (Seeufer, Amt, Labor) – der Simulator
   steht fachlich für sich.
-- Die Zielwerte der Aufgabe (Belichtung ±0,5 EV, Bewegung, Schärfentiefe) sind gesetzt,
-  nicht aus dem Kursmaterial abgeleitet.
+- Die Toleranz der Belichtungsaufgabe (±0,5 EV) ist gesetzt, nicht aus dem Kursmaterial
+  abgeleitet.
