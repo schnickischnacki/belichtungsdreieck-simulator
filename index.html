@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belichtungsdreieck-Simulator</title>
+<style>
+  :root{--bg:#0f1115;--card:#1a1d24;--line:#2a2f3a;--txt:#e7e9ee;--mut:#9aa3b2;
+        --ok-bg:#12301f;--ok:#5bd08a;--warn-bg:#33280f;--warn:#e6b24a;--bad-bg:#331616;--bad:#e26a6a;--acc:#c9502f;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5;padding:18px;}
+  .wrap{max-width:520px;margin:0 auto;}
+  h1{font-size:18px;font-weight:600;margin:0 0 12px;}
+  .stage{background:#111;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  svg{width:100%;display:block;background:#1a1a1a;}
+  .fb{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px;}
+  .chip{font-size:12px;padding:4px 10px;border-radius:8px;}
+  .ok{background:var(--ok-bg);color:var(--ok)} .warn{background:var(--warn-bg);color:var(--warn)} .bad{background:var(--bad-bg);color:var(--bad)}
+  .ctrl{display:grid;gap:14px;margin-top:14px;}
+  .row{display:flex;align-items:center;gap:12px;}
+  .row label{font-size:14px;color:var(--mut);width:140px;}
+  .row .v{font-size:14px;font-weight:600;min-width:56px;text-align:right;}
+  input[type=range]{flex:1;accent-color:var(--acc);height:22px;}
+  .task{margin-top:16px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--mut);}
+  .task b{color:var(--txt);font-weight:600;}
+  .solved{margin-top:12px;padding:12px;border-radius:8px;font-size:14px;font-weight:600;background:var(--ok-bg);color:var(--ok);display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Belichtungsdreieck – Simulator</h1>
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 400 220" role="img" aria-label="Simuliertes Foto: bewegtes Motiv vor Hintergrund">
+      <defs>
+        <filter id="dof" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="dofB" stdDeviation="0"/></filter>
+        <filter id="motion" x="-40%" y="-20%" width="180%" height="140%"><feGaussianBlur id="motB" stdDeviation="0 0"/></filter>
+        <filter id="grain"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+      </defs>
+      <g filter="url(#dof)">
+        <rect x="0" y="0" width="400" height="220" fill="#2b3a4a"/>
+        <rect x="0" y="150" width="400" height="70" fill="#33424f"/>
+        <circle cx="60" cy="60" r="14" fill="#5c7a99"/>
+        <circle cx="330" cy="50" r="18" fill="#6b8bad"/>
+        <circle cx="250" cy="90" r="10" fill="#4d6883"/>
+        <circle cx="120" cy="110" r="8" fill="#5c7a99"/>
+      </g>
+      <g id="subject" filter="url(#motion)">
+        <circle cx="200" cy="95" r="20" fill="#e8c9a0"/>
+        <rect x="180" y="115" width="40" height="70" rx="10" fill="#c9502f"/>
+        <rect x="192" y="180" width="7" height="30" fill="#3a3a3a"/>
+        <rect x="201" y="180" width="7" height="30" fill="#3a3a3a"/>
+      </g>
+      <rect id="expo" x="0" y="0" width="400" height="220" fill="#ffffff" opacity="0"/>
+      <rect id="noise" x="0" y="0" width="400" height="220" filter="url(#grain)" opacity="0"/>
+    </svg>
+  </div>
+
+  <div id="feedback" class="fb"></div>
+
+  <div class="ctrl">
+    <div class="row"><label>Blende</label><input id="ap" type="range" min="0" max="7" step="1" value="3"><span id="apV" class="v"></span></div>
+    <div class="row"><label>Belichtungszeit</label><input id="sh" type="range" min="0" max="7" step="1" value="3"><span id="shV" class="v"></span></div>
+    <div class="row"><label>ISO</label><input id="is" type="range" min="0" max="6" step="1" value="2"><span id="isV" class="v"></span></div>
+  </div>
+
+  <div class="task"><b>Aufgabe:</b> Das Motiv schwenkt durchs Bild. Belichte korrekt, friere die Bewegung ein und halte den Hintergrund unscharf.</div>
+  <div id="solved" class="solved">Gelöst – alle drei Ziele erreicht.</div>
+</div>
+
+<script>
+/* ---- SCORM 1.2 API (optional, meldet Abschluss/Score an Moodle) ---- */
+var API=null;
+function findAPI(w){var n=0;while(w.API==null&&w.parent!=null&&w.parent!=w&&n<10){n++;w=w.parent;}return w.API;}
+function initSCORM(){try{API=findAPI(window)||(window.opener?findAPI(window.opener):null);if(API){API.LMSInitialize("");}}catch(e){API=null;}}
+function reportDone(score){
+  /* Bei Vercel-Hosting per iframe gibt es keine SCORM-API – dann meldet nur postMessage. */
+  try{window.parent&&window.parent!==window&&window.parent.postMessage({type:"belichtungsdreieck:done",score:score},"*");}catch(e){}
+  if(!API)return;try{API.LMSSetValue("cmi.core.score.raw",String(score));API.LMSSetValue("cmi.core.score.min","0");API.LMSSetValue("cmi.core.score.max","100");API.LMSSetValue("cmi.core.lesson_status",score>=100?"completed":"incomplete");API.LMSCommit("");}catch(e){}}
+window.addEventListener("load",initSCORM);
+window.addEventListener("unload",function(){if(API){try{API.LMSFinish("");}catch(e){}}});
+
+/* ---- Simulation ---- */
+var AP=[1.4,2,2.8,4,5.6,8,11,16], SH=[15,30,60,125,250,500,1000,2000], IS=[100,200,400,800,1600,3200,6400];
+var K=0.2, done=false;
+function $(id){return document.getElementById(id);}
+function chip(t,r){return '<span class="chip '+r+'">'+t+'</span>';}
+function upd(){
+  var N=AP[+$('ap').value], td=SH[+$('sh').value], iso=IS[+$('is').value], t=1/td;
+  var stops=Math.log2(((t/(N*N))*iso)/K);
+  var dofB=Math.max(0.2,10-(Math.log2(N)-0.49)/(4-0.49)*9.7);
+  var motB=Math.max(0,(Math.log2(500)-Math.log2(td))*3);
+  var noise=Math.min(0.45,Math.max(0,Math.log2(iso/100)/6*0.45));
+  $('apV').textContent='f/'+N; $('shV').textContent='1/'+td+'s'; $('isV').textContent=iso;
+  $('dofB').setAttribute('stdDeviation',dofB.toFixed(1));
+  $('motB').setAttribute('stdDeviation',motB.toFixed(1)+' 0');
+  $('noise').setAttribute('opacity',noise.toFixed(2));
+  var ex=$('expo');
+  if(stops>0){ex.setAttribute('fill','#ffffff');ex.setAttribute('opacity',Math.min(0.85,stops*0.18).toFixed(2));}
+  else{ex.setAttribute('fill','#000000');ex.setAttribute('opacity',Math.min(0.85,-stops*0.18).toFixed(2));}
+  var expoOK=Math.abs(stops)<=0.5, motOK=motB<=3, dofOK=dofB>=4, fb=[];
+  fb.push(expoOK?chip('Belichtung korrekt','ok'):(stops>0?chip('überbelichtet (+'+stops.toFixed(1)+' EV)','bad'):chip('unterbelichtet ('+stops.toFixed(1)+' EV)','bad')));
+  fb.push(motOK?chip('Bewegung eingefroren','ok'):chip('Bewegungsunschärfe','warn'));
+  fb.push(dofOK?chip('Hintergrund unscharf','ok'):chip('Hintergrund scharf','warn'));
+  $('feedback').innerHTML=fb.join('');
+  if(expoOK&&motOK&&dofOK){$('solved').style.display='block';if(!done){done=true;reportDone(100);}}
+  else{$('solved').style.display='none';}
+}
+['ap','sh','is'].forEach(function(id){$(id).addEventListener('input',upd);});
+upd();
+</script>
+</body>
+</html>
