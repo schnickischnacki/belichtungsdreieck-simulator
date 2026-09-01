@@ -75,7 +75,14 @@ Fehler = (EV_Szene − ND) − ( log2(N² · t⁻¹) − log2(ISO/100) )
 
 `EV_Szene` ist 15 bei Sonne und 6–13 im Studio (Vorgabe 9). Ein Fehler von 0 ist
 korrekt belichtet, Toleranz ±0,5 Blenden. Schärfentiefe folgt aus der Blendenzahl,
-Rauschen aus dem ISO-Wert. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
+Rauschen aus dem ISO-Wert.
+
+**Reglerbereiche** (bewusst eng gehalten, damit jeder Schritt eine Entscheidung ist):
+Blende f/2.8–f/16, Belichtungszeit 1/15–1/1000 s, ISO 100–1600, ND 0–6 Blenden.
+Vor jeder Änderung dieser Bereiche die Lösbarkeit nachrechnen – bei Foto/draußen
+gibt es mit diesen Werten genau **eine** Lösung (f/5.6 · 1/1000 s · ISO 100), was
+fachlich stimmt (pralle Sonne lässt wenig Spielraum), aber keine weitere Einengung
+verträgt. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
 *Zielkonflikt*, keine fotometrisch exakten Werte.
 
 **Bewegungsunschärfe** wird im Fotomodus aus der Belichtungszeit abgeleitet
@@ -117,6 +124,9 @@ sie einen Monitor darstellt.
 
 Geprüft auf Desktop (1280), iPad (768) und Mobil (375): einspaltig ab unter 900 px,
 kein horizontaler Überlauf, alle Bedienelemente mindestens 44 px hoch.
+
+Die Kopfleiste hat drei Segmente – **Intro · Foto · Video**; das Intro ist damit
+jederzeit erreichbar, ohne dass eine Fußzeile nötig wäre.
 
 ## Offene Punkte
 
