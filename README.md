@@ -1,14 +1,23 @@
-# Belichtungsdreieck-Simulator
+# Belichtungs-Simulator – Foto und Video
 
-Interaktiver Simulator zum Belichtungsdreieck (Blende / Belichtungszeit / ISO) für den
-Moodle-Kurs zur Kamerascheinprüfung (HS Ansbach). Drei Regler, ein simuliertes Bild:
-Wer eine Achse verändert, sieht sofort, was mit Belichtung, Bewegungsunschärfe,
-Schärfentiefe und Rauschen passiert.
+Interaktiver Simulator zur Belichtung für den Moodle-Kurs zur Kamerascheinprüfung
+(HS Ansbach). Regler, ein simuliertes Bild, sofortige Rückmeldung: Wer eine
+Stellschraube verändert, sieht, was mit Belichtung, Schärfentiefe,
+Bewegungsunschärfe und Rauschen passiert.
 
-**Aufgabe:** Motiv korrekt belichten, Bewegung einfrieren, Hintergrund unscharf halten –
-alle drei Ziele gleichzeitig. Genau der Zielkonflikt, um den es beim Belichtungsdreieck geht.
+Die App hat **zwei Modi**, und der Unterschied zwischen ihnen ist der eigentliche
+Lerninhalt:
 
-Verortung: **Modul 3 – Kamera konfigurieren** (Lichtwechsel Seeufer / Amt / Labor).
+| Modus | Stellschrauben | Aufgabe |
+|---|---|---|
+| **Fotokamera** – das Belichtungs*dreieck* | Blende, Belichtungszeit, ISO | korrekt belichten, Bewegung einfrieren, Hintergrund unscharf |
+| **Videokamera** – das Belichtungs*fünfeck* | Licht, ND-Filter, Blende, **Zeit gesperrt auf 1/50 s**, ISO | korrekt belichten und Hintergrund unscharf – ohne die Zeit anzufassen |
+
+Dazu zwei Lichtsituationen: **draußen bei Sonne** (hell, nicht regelbar – hier hilft
+nur der ND-Filter) und **Studiolicht** (in Blendenstufen regelbar, „halb so hell =
+eine Blendenstufe weniger").
+
+Verortung: **Modul 3 – Kamera konfigurieren**, Abschnitt 3b „Richtig belichten".
 
 ## Aufbau
 
@@ -16,7 +25,7 @@ Eine einzige statische `index.html` – kein Build, keine Dependencies, kein Bac
 Alles inline: SVG-Szene, Simulationslogik, Styles.
 
 ```
-index.html          das Widget
+index.html          die App
 scorm/              imsmanifest.xml für die SCORM-Variante (siehe unten)
 ```
 
@@ -24,85 +33,97 @@ scorm/              imsmanifest.xml für die SCORM-Variante (siehe unten)
 
 ```bash
 python3 -m http.server 8000
-# http://localhost:8000
 ```
+
+Im Projekt-Repo der Masterarbeit gibt es dafür die Startkonfiguration
+`belichtungsdreieck` in `.claude/launch.json`.
 
 ## Deploy auf Vercel
 
 Repo in Vercel importieren, Framework-Preset **„Other"**, Build Command leer lassen,
 Output Directory auf den Repo-Root. Keine Env-Variablen. Es ist eine statische Datei.
+Push auf `master` löst den Deploy aus.
 
 ## Einbau in Moodle
 
-Im Projekt ist **SCORM als Erstwahl dokumentiert** (`SecondBrain Thesis/06_Prototyp_Moodle/Gestaltungsmöglichkeiten Moodle.md`, Abschnitt 3.3 und Auswahllogik). Die iframe-Variante ist zusätzlich vorbereitet, hebt diese Entscheidung aber nicht auf – sie ist der einfachere Update-Weg, kostet dafür den automatischen Aktivitätsabschluss.
+Im Projekt ist **SCORM als Erstwahl dokumentiert** (`SecondBrain Thesis/06_Prototyp_Moodle/Gestaltungsmöglichkeiten Moodle.md`, Abschnitt 3.3). Die iframe-Variante ist vorbereitet, hebt die Entscheidung aber nicht auf – sie ist der einfachere Update-Weg, kostet dafür den automatischen Aktivitätsabschluss.
 
-### Variante A – iframe auf die Vercel-URL
+### Variante A – Link/URL-Aktivität (im Kurs umgesetzt)
 
-Text- und Medien-Feld, Editor auf Quellcode umschalten, einfügen und URL ersetzen:
+Wie bei der Objektivwechsel-App: Link/URL-Aktivität, Anzeige „Neues Fenster".
+Die Instanz erlaubt keine fremden iframes ohne Whitelist-Eintrag – deshalb ist der
+Link der zuverlässige Weg.
 
-```html
-<iframe
-  src="https://DEINE-URL.vercel.app"
-  title="Simulator: Belichtungsdreieck"
-  width="100%"
-  height="720"
-  style="border:1px solid #e4dfd7;border-radius:14px;"
-  loading="lazy"
-  sandbox="allow-scripts allow-same-origin"
-></iframe>
-```
+### Variante B – SCORM-Paket
 
-Bei gelöster Aufgabe schickt das Widget
-`postMessage({type:'belichtungsdreieck:done', score:100})` ans Parent-Fenster – falls der
-Aktivitätsabschluss später daran gehängt werden soll.
+`index.html` + `scorm/imsmanifest.xml` (Manifest ins Zip-Root) als ZIP packen und als
+SCORM-Lernpaket hochladen. Dann meldet die App Score und `lesson_status` per
+SCORM 1.2 an Moodle – Aktivitätsabschluss ohne Zusatzcode.
 
-### Variante B – SCORM-Paket (dokumentierte Erstwahl)
-
-`index.html` + `scorm/imsmanifest.xml` (Manifest muss dabei ins Zip-Root) als ZIP packen und
-als SCORM-Lernpaket hochladen. Dann meldet das Widget Score und `lesson_status` per
-SCORM 1.2 an Moodle – Aktivitätsabschluss ohne Zusatzcode. Dafür liegt es nicht unter einer
-eigenen URL und ist schwerer zu aktualisieren.
-
-Beide Wege funktionieren aus derselben `index.html`: Findet sie eine SCORM-API, meldet sie
-darüber; findet sie keine, nutzt sie `postMessage`.
+Beide Wege laufen aus derselben `index.html`: Findet sie eine SCORM-API, meldet sie
+darüber; findet sie keine, schickt sie
+`postMessage({type:'belichtung:progress', score, status})` ans Parent-Fenster.
+**Score:** 50 pro gelöstem Modus, 100 wenn beide gelöst sind.
 
 ## Simulationsmodell
 
-`stops = log2((t / N²) · ISO / K)` mit `K = 0.2` – Abweichung von 0 EV ist Fehlbelichtung.
-Schärfentiefe wird aus der Blendenzahl, Bewegungsunschärfe aus der Belichtungszeit
-(Referenz 1/500 s) und Rauschen aus dem ISO-Wert abgeleitet. Bewusst ein didaktisches
-Modell, keine fotometrisch exakte Rechnung: Es soll die *Richtung* und den *Zielkonflikt*
-zeigen, nicht Messwerte liefern.
+Gerechnet wird in Blendenstufen (EV), nicht in Messwerten:
 
-## ⚠ Fachlicher Konflikt mit der Kursquelle – vor dem Einsatz klären
+```
+Fehler = (EV_Szene − ND) − ( log2(N² · t⁻¹) − log2(ISO/100) )
+```
 
-Abgleich mit `Old Moodle Kurs/8_Richtig Belichten/Belichtungsdreieck.html` (16.07.2026):
+`EV_Szene` ist 15 bei Sonne und 6–13 im Studio (Vorgabe 9). Ein Fehler von 0 ist
+korrekt belichtet, Toleranz ±0,5 Blenden. Schärfentiefe folgt aus der Blendenzahl,
+Rauschen aus dem ISO-Wert. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
+*Zielkonflikt*, keine fotometrisch exakten Werte.
 
-1. **Der Kurs lehrt kein Dreieck, sondern ein Fünfeck.** Die Quellseite nennt fünf Wege zu
-   weniger Belichtung: Licht im Set, ND-Filter, Blende, Belichtungszeit, ISO – und sagt
-   ausdrücklich, dass Punkt 1 und 2 „beim klassischen Belichtungsdreieck der Fotografie
-   nicht berücksichtigt" werden. Auch das Kursvideo heißt
-   `11_belichtungsdrei-vier-fünfeck.mp4`. Dieser Simulator hat nur die drei fotografischen
-   Regler – also das Modell, das der Kurs als unvollständig markiert.
+**Bewegungsunschärfe** wird im Fotomodus aus der Belichtungszeit abgeleitet
+(Referenz 1/500 s = eingefroren) und im Videomodus als konstanter, erwünschter Wert
+gezeichnet – bei 1/50 s ist Bewegungsunschärfe kein Fehler, sondern das Ziel.
 
-2. **Die Aufgabe trainiert gegen die Kursregel.** Die Quelle: „für ein cinematische
-   Seherfahrung wollen wir die Belichtungszeit unbedingt 1/50s behalten bei 25fps".
-   Die Aufgabe hier verlangt „friere die Bewegung ein" – lösbar erst ab ca. 1/250 s. Wer
-   löst, tut genau das, was der Kurs verbietet (180°-Regel).
+> **Regel im Code:** Die Marke unter dem Bild leitet sich aus demselben Wert ab, der
+> die Unschärfe zeichnet (`motOK = motB < 0.5`). Damit kann die Rückmeldung nicht mehr
+> „eingefroren" sagen, während das Bild sichtbar verwischt ist – genau dieser Fehler
+> trat vorher bei 1/250 s auf.
 
-Optionen: **(A)** Belichtungszeit auf 1/50 s fixieren und stattdessen ND-Filter und Licht
-als Regler ergänzen – dann bildet der Simulator den Kursinhalt ab und der Zielkonflikt wird
-schärfer; die Rechnung bleibt dieselbe (jede Stufe = 1 Blende). **(B)** Als bewussten
-Vorschritt „so geht Fotografie" rahmen und die Erweiterung direkt danach setzen.
-Unverändert einbinden ist nicht empfohlen.
+## Fachlicher Hintergrund: warum zwei Modi
 
-## Weitere offene Punkte
+Der Abgleich mit `Old Moodle Kurs/8_Richtig Belichten/Belichtungsdreieck.html`
+hatte 2026-07-16 zwei Konflikte ergeben:
 
-- **Gestaltung weicht ab:** Der Simulator ist dunkel (`#0f1115`) und nutzt nicht die
-  Farbwelt der übrigen Moodle-Inline-Seiten (Cream `#f6f4f0` / Akzentorange `#c1651f`).
-  Für einen Sucher-/Monitorkontext ist Dunkel verteidigbar, als Kursbaustein bricht es aber
-  den visuellen Faden. Vor dem Livegang entscheiden: angleichen oder bewusst absetzen.
-- Kein Narrativ-Anschluss an Peter Z. / Episode 3 (Seeufer, Amt, Labor) – der Simulator
-  steht fachlich für sich.
-- Die Toleranz der Belichtungsaufgabe (±0,5 EV) ist gesetzt, nicht aus dem Kursmaterial
-  abgeleitet.
+1. **Der Kurs lehrt kein Dreieck, sondern ein Fünfeck.** Die Quellseite nennt fünf
+   Wege zu weniger Belichtung – Licht im Set, ND-Filter, Blende, Belichtungszeit,
+   ISO – und sagt ausdrücklich, dass Punkt 1 und 2 „beim klassischen
+   Belichtungsdreieck der Fotografie nicht berücksichtigt" werden. Auch das
+   Kursvideo heißt `11_belichtungsdrei-vier-fünfeck.mp4`.
+2. **Die alte Aufgabe trainierte gegen die Kursregel.** Die Quelle: „für ein
+   cinematische Seherfahrung wollen wir die Belichtungszeit unbedingt 1/50s behalten
+   bei 25fps". Die Aufgabe verlangte „friere die Bewegung ein" – wer löste, tat
+   genau das, was der Kurs verbietet (180°-Regel).
+
+**Beides ist mit den zwei Modi aufgelöst**, statt einen der beiden Konflikte
+wegzudefinieren: Der Fotomodus bleibt das Dreieck und ist als Fotografie
+gekennzeichnet; der Videomodus sperrt die Zeit auf 1/50 s, nennt die 25 Bilder und
+ergänzt Licht und ND-Filter zum Fünfeck. Der Wechsel zwischen beiden *ist* die
+Lernerfahrung – der Unterschied wird erlebbar statt behauptet.
+
+## Gestaltung
+
+Die App nutzt die Design-Tokens der Moodle-Kursseiten und der Objektivwechsel-App
+(Cream `#f6f4f0`, Ink `#1e2530`, Akzent `#c1651f`, Serif für Zitate). Der frühere
+dunkle Eigenstil ist damit aufgelöst; dunkel bleibt nur die Bildfläche selbst, weil
+sie einen Monitor darstellt.
+
+Geprüft auf Desktop (1280), iPad (768) und Mobil (375): einspaltig ab unter 900 px,
+kein horizontaler Überlauf, alle Bedienelemente mindestens 44 px hoch.
+
+## Offene Punkte
+
+- Kein Narrativ-Anschluss an Mara / Episode 3 (Seeufer, Amt, Labor) – die App steht
+  fachlich für sich.
+- Die Toleranz der Belichtungsaufgabe (±0,5 Blenden) ist gesetzt, nicht aus dem
+  Kursmaterial abgeleitet.
+- Die Studio-Lichtstufen sind relativ angegeben („+1 Blende"), nicht in Lux oder Watt –
+  bewusst, weil der Kurs die Beziehung „doppelt so hell = eine Blende" lehrt und keine
+  absoluten Werte.
