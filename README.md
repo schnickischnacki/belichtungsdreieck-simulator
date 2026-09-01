@@ -144,15 +144,15 @@ kein horizontaler Überlauf, alle Bedienelemente mindestens 44 px hoch.
 Die Kopfleiste hat drei Segmente – **Intro · Foto · Video**; das Intro ist damit
 jederzeit erreichbar, ohne dass eine Fußzeile nötig wäre.
 
-**Raster:** ab 900 px zwei Zeilen statt zweier langer Spalten –
-`Bühne | Regler` oben, `Lichtsituation | Aufgabe` unten. Die einspaltige
-Variante stapelt in der Lesereihenfolge Bühne → Aufgabe → Licht → Regler.
-Grund: Mit zwei Spalten lief die linke Spalte deutlich länger als die rechte –
-rechts blieb toter Weißraum, und die Lichtsituation rutschte unter den Rand.
+**Raster:** ab 900 px zwei eigenständige Spalten, die jeweils für sich stapeln –
+links `Bühne + Marken` und darunter `Aufgabe / Hinweis / Gelöst`, rechts
+`Lichtsituation und ND-Filter` und darunter `Kamera einstellen`. Bewusst keine
+Rasterzeilen: Sonst wartet eine Zelle auf die Höhe der anderen und es entstehen
+Löcher, sobald ein Modus mehr Inhalt hat. Einspaltig ergibt die DOM-Reihenfolge von
+selbst Bühne → Aufgabe → Licht → Regler.
 
-Dass der ND-Filter im Licht-Block sitzt, ist zugleich der Grund, warum das Raster in
-**beiden** Modi aufgeht: Sonst wäre der Reglerblock im Videomodus rund 150 px länger
-als die Bühne. Gemessen bei 1280 × 900: Foto 413/398, Video 413/418.
+Dass der ND-Filter im Licht-Block sitzt, hält den Reglerblock in beiden Modi ähnlich
+hoch (398 px im Foto-, 418 px im Videomodus statt 564).
 
 ## Offene Punkte
 
