@@ -139,6 +139,12 @@ kein horizontaler Überlauf, alle Bedienelemente mindestens 44 px hoch.
 Die Kopfleiste hat drei Segmente – **Intro · Foto · Video**; das Intro ist damit
 jederzeit erreichbar, ohne dass eine Fußzeile nötig wäre.
 
+**Raster:** ab 900 px zwei Zeilen statt zweier langer Spalten –
+`Bühne | Regler` oben, `Lichtsituation | Aufgabe` unten. Die einspaltige
+Variante stapelt in der Lesereihenfolge Bühne → Aufgabe → Licht → Regler.
+Grund: Mit zwei Spalten lief die linke Spalte deutlich länger als die rechte –
+rechts blieb toter Weißraum, und die Lichtsituation rutschte unter den Rand.
+
 ## Offene Punkte
 
 - Kein Narrativ-Anschluss an Mara / Episode 3 (Seeufer, Amt, Labor) – die App steht

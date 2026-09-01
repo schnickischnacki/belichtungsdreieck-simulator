@@ -74,8 +74,15 @@
   .switch button.seg-ghost:hover{color:var(--ink)}
   .seg-sep{width:1px;align-self:stretch;margin:6px 2px;background:var(--line);flex:0 0 auto}
 
-  .cols{display:grid;gap:16px}
-  @media(min-width:900px){.cols{grid-template-columns:minmax(0,1.3fr) minmax(320px,.7fr);align-items:start}}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr;
+        grid-template-areas:'buehne' 'info' 'licht' 'kamera';align-items:start}
+  @media(min-width:900px){
+    .grid{grid-template-columns:minmax(0,1fr) minmax(340px,.78fr);
+          grid-template-areas:'buehne kamera' 'licht info';}
+  }
+  .a-buehne{grid-area:buehne} .a-kamera{grid-area:kamera}
+  .a-licht{grid-area:licht}   .a-info{grid-area:info}
+  .a-licht .panel.licht{margin-top:0}
 
   .badge{display:flex;gap:11px;align-items:flex-start;background:var(--cream-warm);border:1px solid var(--accent);
          border-radius:12px;padding:12px 14px;margin:0 0 12px}
@@ -209,8 +216,8 @@
     <div><b id="badgeT"></b><span id="badgeS"></span></div>
   </div>
 
-  <div class="cols">
-    <div>
+  <div class="grid">
+    <section class="a-buehne">
       <div class="stage">
         <svg id="scene" viewBox="0 0 400 225" role="img" aria-labelledby="sceneDesc">
           <title id="sceneDesc">Simuliertes Bild: eine Person halbnah vor einem Hintergrund</title>
@@ -253,28 +260,9 @@
         </svg>
       </div>
       <div class="chips" id="chips"></div>
-      <div class="task" id="task"></div>
-      <div class="tip" id="tip" hidden></div>
-      <div class="solved" id="solved" hidden></div>
+    </section>
 
-      <div class="panel licht">
-        <div class="lichtkopf">
-          <h2>Lichtsituation</h2>
-          <div class="seg" role="group" aria-label="Lichtsituation">
-            <button type="button" id="lOut" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg>Draußen, Sonne</button>
-            <button type="button" id="lStu" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6.6 3.6h10.8l2.1 7.2H4.5z"/><path d="M12 10.8V20"/><path d="M8.6 20h6.8"/></svg>Studiolicht</button>
-          </div>
-        </div>
-        <div class="row" id="rowLight">
-          <div class="head"><label for="li">Helligkeit</label><span class="val" id="liV"></span></div>
-          <div class="hint" id="liHint"></div>
-          <input id="li" type="range" min="0" max="7" step="1" value="3">
-        </div>
-      </div>
-
-    </div>
-
-    <div>
+    <section class="a-kamera">
       <div class="panel">
         <h2 id="ctrlH">Kamera einstellen</h2>
 
@@ -306,7 +294,30 @@
           <input id="is" type="range" min="0" max="4" step="1" value="2">
         </div>
       </div>
-    </div>
+    </section>
+
+    <section class="a-licht">
+      <div class="panel licht">
+        <div class="lichtkopf">
+          <h2>Lichtsituation</h2>
+          <div class="seg" role="group" aria-label="Lichtsituation">
+            <button type="button" id="lOut" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg>Draußen, Sonne</button>
+            <button type="button" id="lStu" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6.6 3.6h10.8l2.1 7.2H4.5z"/><path d="M12 10.8V20"/><path d="M8.6 20h6.8"/></svg>Studiolicht</button>
+          </div>
+        </div>
+        <div class="row" id="rowLight">
+          <div class="head"><label for="li">Helligkeit</label><span class="val" id="liV"></span></div>
+          <div class="hint" id="liHint"></div>
+          <input id="li" type="range" min="0" max="7" step="1" value="3">
+        </div>
+      </div>
+    </section>
+
+    <section class="a-info">
+      <div class="task" id="task"></div>
+      <div class="tip" id="tip" hidden></div>
+      <div class="solved" id="solved" hidden></div>
+    </section>
   </div>
 </main>
 
