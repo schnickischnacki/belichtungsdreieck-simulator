@@ -87,6 +87,13 @@ f/5.6 · 1/1000 s · ISO 100. Fachlich stimmt das (pralle Sonne lässt wenig Spi
 verträgt aber keine weitere Einengung. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
 *Zielkonflikt*, keine fotometrisch exakten Werte.
 
+**Die Szene** ist eine Halbnahe (Kopf und Schultern, unten angeschnitten) mit einem
+Lichtpool hinter der Person und einer leichten Vignette. Beides ist kein Zierrat: Ohne
+Trennung vom Hintergrund liest sich der Unterschied zwischen offener und geschlossener
+Blende nicht. Im Videomodus trägt die Person nur noch einen Hauch Unschärfe (0,7 statt
+2,4) – bei 1/50 s sitzt eine Interviewpartnerin praktisch still, und eine dauerhaft
+weiche Person kann sich nie vom Hintergrund abheben.
+
 **Bewegungsunschärfe** wird im Fotomodus aus der Belichtungszeit abgeleitet
 (Referenz **1/125 s = eingefroren**; in der Praxis stehen Portraits je nach Bewegung
 schon ab 1/60–1/125 s. Die früher bei 1/250 s gezeichnete Unschärfe liegt jetzt bei
