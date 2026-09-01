@@ -79,14 +79,18 @@ Rauschen aus dem ISO-Wert.
 
 **Reglerbereiche** (bewusst eng gehalten, damit jeder Schritt eine Entscheidung ist):
 Blende f/2.8–f/16, Belichtungszeit 1/15–1/1000 s, ISO 100–1600, ND 0–6 Blenden.
-Vor jeder Änderung dieser Bereiche die Lösbarkeit nachrechnen – bei Foto/draußen
-gibt es mit diesen Werten genau **eine** Lösung (f/5.6 · 1/1000 s · ISO 100), was
-fachlich stimmt (pralle Sonne lässt wenig Spielraum), aber keine weitere Einengung
-verträgt. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
+Vor jeder Änderung dieser Bereiche die Lösbarkeit nachrechnen. Stand: Foto/Studio 9,
+Foto/draußen **1**, Video/Studio 12, Video/draußen 6 Lösungen bei Vorgabehelligkeit.
+Der Engpass draußen im Fotomodus ist die Belichtung, nicht die Bewegung: Bei EV 15 und
+einer Blende, die für den unscharfen Hintergrund gebunden ist, balanciert nur
+f/5.6 · 1/1000 s · ISO 100. Fachlich stimmt das (pralle Sonne lässt wenig Spielraum),
+verträgt aber keine weitere Einengung. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
 *Zielkonflikt*, keine fotometrisch exakten Werte.
 
 **Bewegungsunschärfe** wird im Fotomodus aus der Belichtungszeit abgeleitet
-(Referenz 1/500 s = eingefroren) und im Videomodus als konstanter, erwünschter Wert
+(Referenz **1/125 s = eingefroren**; in der Praxis stehen Portraits je nach Bewegung
+schon ab 1/60–1/125 s. Die früher bei 1/250 s gezeichnete Unschärfe liegt jetzt bei
+1/60 s – das schafft mehrere gültige Lösungen statt einer einzigen) und im Videomodus als konstanter, erwünschter Wert
 gezeichnet – bei 1/50 s ist Bewegungsunschärfe kein Fehler, sondern das Ziel.
 
 > **Regel im Code:** Die Marke unter dem Bild leitet sich aus demselben Wert ab, der

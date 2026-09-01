@@ -49,11 +49,11 @@
   .how{list-style:none;margin:0 0 16px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
   .how li{position:relative;padding-left:16px;font-size:.92rem}
   .how li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-  blockquote{margin:0 0 18px;padding-left:14px;border-left:2px solid var(--line);
-             font-family:var(--serif);font-style:italic;color:var(--muted);font-size:.95rem}
   .btn{appearance:none;border:0;cursor:pointer;font-family:inherit;min-height:52px;
        padding:0 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:1rem;
        transition:opacity .15s ease}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px}
+  .btn svg{width:19px;height:19px;flex:0 0 auto}
   .btn:hover{opacity:.9}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
   .btn-row{display:flex;flex-wrap:wrap;gap:10px}
@@ -107,7 +107,7 @@
 
   .row{display:grid;grid-template-columns:1fr;gap:4px;margin:0 0 14px}
   .row:last-child{margin-bottom:0}
-  .row[hidden],.locked[hidden]{display:none}
+  .row[hidden],.locked[hidden],.hint[hidden]{display:none}
   .row .head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .row label{font-size:.88rem;color:var(--muted);font-weight:600}
   .row .val{font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--ink)}
@@ -165,14 +165,13 @@
       <li>Wähle oben den Modus – <strong>Foto</strong> oder <strong>Video</strong>. Die Aufgabe wechselt mit.</li>
       <li>Stell die Lichtsituation ein: <strong>draußen</strong> ist es hell und du kannst nichts daran ändern, im <strong>Studio</strong> regelst du das Licht selbst.</li>
       <li>Schieb die Regler und beobachte das Bild. Die Marken darunter sagen dir, was schon stimmt.</li>
-      <li>Ein Ziel ist erst erfüllt, wenn du es <em>im Bild</em> siehst – nicht, wenn der Wert ungefähr passt.</li>
+      <li>Ein Ziel ist erst erfüllt, wenn du es <em>im Bild</em> siehst.</li>
     </ul>
 
-    <blockquote>„Zu dunkel kann ich im Schnitt vielleicht noch retten. Ausgefressen ist weg." – dieselbe Regel wie beim Ton.</blockquote>
 
     <div class="btn-row">
-      <button class="btn" id="startFoto" type="button">Mit der Fotokamera starten</button>
-      <button class="btn ghost" id="startVideo" type="button">Direkt zur Videokamera</button>
+      <button class="btn" id="startFoto" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.8a1 1 0 0 1 .86-.48h5.68a1 1 0 0 1 .86.48L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Mit der Fotokamera starten</button>
+      <button class="btn ghost" id="startVideo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="7" width="13" height="10" rx="2.2"/><path d="M15.5 11.2l5-2.8v7.2l-5-2.8z"/><circle cx="8" cy="12" r="2.3"/></svg>Direkt zur Videokamera</button>
     </div>
   </div>
 </section>
@@ -252,8 +251,8 @@
         </div>
         <div class="row" id="rowLight">
           <div class="head"><label for="li">Helligkeit</label><span class="val" id="liV"></span></div>
-          <input id="li" type="range" min="0" max="7" step="1" value="3">
           <div class="hint" id="liHint"></div>
+          <input id="li" type="range" min="0" max="7" step="1" value="3">
         </div>
       </div>
 
@@ -262,18 +261,19 @@
 
         <div class="row" id="rowNd" hidden>
           <div class="head"><label for="nd">ND-Filter</label><span class="val" id="ndV"></span></div>
-          <input id="nd" type="range" min="0" max="6" step="1" value="0">
           <div class="hint">Graufilter vor dem Objektiv: nimmt Licht weg, ohne die Farben zu ändern.</div>
+          <input id="nd" type="range" min="0" max="6" step="1" value="0">
         </div>
 
         <div class="row">
           <div class="head"><label for="ap">Blende</label><span class="val" id="apV"></span></div>
+          <div class="hint">Kleine Zahl = offen = wenig Schärfentiefe, also unscharfer Hintergrund.</div>
           <input id="ap" type="range" min="0" max="5" step="1" value="1">
-          <div class="hint">Kleine Zahl = offen = wenig Schärfentiefe.</div>
         </div>
 
         <div class="row">
           <div class="head"><label for="sh">Belichtungszeit</label><span class="val" id="shV"></span></div>
+          <div class="hint" id="shHint"></div>
           <input id="sh" type="range" min="0" max="6" step="1" value="3">
           <div class="locked" id="shLock" hidden>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
@@ -283,8 +283,8 @@
 
         <div class="row">
           <div class="head"><label for="is">ISO</label><span class="val" id="isV"></span></div>
-          <input id="is" type="range" min="0" max="4" step="1" value="2">
           <div class="hint">Verstärkt das Signal. Hohe Werte rauschen.</div>
+          <input id="is" type="range" min="0" max="4" step="1" value="2">
         </div>
       </div>
     </div>
@@ -319,7 +319,10 @@ var VIDEO_T=50;                                  // feste Belichtungszeit im Vid
 var EV_SUN=15;                                   // Sonnenlicht
 var EV_STUDIO=[6,7,8,9,10,11,12,13];             // Regelbereich Studio, Index 3 = EV 9 (Vorgabe)
 
-var FREEZE=500;         // ab dieser Zeit gilt Bewegung als eingefroren
+var FREEZE=125;         // ab dieser Zeit gilt Bewegung als eingefroren
+/* 1/125 statt 1/500: In der Praxis stehen Portraits je nach Bewegung schon ab 1/60 bis
+   1/125 s. Die frueher bei 1/250 gezeichnete Unschaerfe liegt jetzt bei 1/60 - und ab
+   1/125 gilt die Bewegung als eingefroren. Das schafft mehrere gueltige Loesungen. */
 var TOL=0.5;            // erlaubte Abweichung der Belichtung in Blendenstufen
 var DOF_OK=4;           // ab diesem Unschärfewert gilt der Hintergrund als unscharf
 
@@ -348,6 +351,7 @@ function setMode(m){
     $('badgeT').textContent="Du stellst eine Videokamera ein (FX30)";
     $('badgeS').textContent="Bei 25 Bildern pro Sekunde liegt die Belichtungszeit auf 1/50 s fest. Sie steht dir nicht als Stellschraube zur Verfügung – dafür nimmst du Licht mit dem ND-Filter weg.";
     $('ctrlH').textContent="Kamera einstellen – vier Stellschrauben";
+    $('shHint').hidden=true;
     $('task').innerHTML="<b>Aufgabe:</b> Du drehst ein Interview. Belichte korrekt und halte den Hintergrund unscharf – ohne die Belichtungszeit anzufassen, denn die ist gesperrt.";
     $('solved').textContent="Gelöst – richtig belichtet, Hintergrund unscharf, Zeit unangetastet.";
   }else{
@@ -356,6 +360,8 @@ function setMode(m){
     $('badgeT').textContent="Du stellst eine Fotokamera ein";
     $('badgeS').textContent="Alle drei Stellschrauben sind frei wählbar. Eine kurze Belichtungszeit friert Bewegung ein – diese Möglichkeit hast du beim Film nicht.";
     $('ctrlH').textContent="Kamera einstellen – drei Stellschrauben";
+    $('shHint').hidden=false;
+    $('shHint').textContent="Kurze Zeit friert Bewegung ein, lange verwischt sie. Ab 1/125 s steht ein schwenkendes Motiv.";
     $('task').innerHTML="<b>Aufgabe:</b> Das Motiv schwenkt durchs Bild. Belichte korrekt, friere die Bewegung ein und halte den Hintergrund unscharf.";
     $('solved').textContent="Gelöst – alle drei Ziele erreicht.";
   }
