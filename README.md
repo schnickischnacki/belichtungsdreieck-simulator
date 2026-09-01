@@ -13,6 +13,11 @@ Lerninhalt:
 | **Fotokamera** – das Belichtungs*dreieck* | Blende, Belichtungszeit, ISO | korrekt belichten, Bewegung einfrieren, Hintergrund unscharf |
 | **Videokamera** – das Belichtungs*fünfeck* | Licht, ND-Filter, Blende, **Zeit gesperrt auf 1/50 s**, ISO | korrekt belichten und Hintergrund unscharf – ohne die Zeit anzufassen |
 
+Die Bedienung folgt dabei dem Weg des Lichts: **vor dem Objektiv** (Lichtsituation und
+ND-Filter) und **in der Kamera** (Blende, Zeit, ISO). Der ND-Filter steht deshalb im
+Licht-Block, nicht bei den Kameraeinstellungen – er nimmt Licht weg, bevor es das
+Objektiv erreicht.
+
 Dazu zwei Lichtsituationen: **draußen bei Sonne** (hell, nicht regelbar – hier hilft
 nur der ND-Filter) und **Studiolicht** (in Blendenstufen regelbar, „halb so hell =
 eine Blendenstufe weniger").
@@ -144,6 +149,10 @@ jederzeit erreichbar, ohne dass eine Fußzeile nötig wäre.
 Variante stapelt in der Lesereihenfolge Bühne → Aufgabe → Licht → Regler.
 Grund: Mit zwei Spalten lief die linke Spalte deutlich länger als die rechte –
 rechts blieb toter Weißraum, und die Lichtsituation rutschte unter den Rand.
+
+Dass der ND-Filter im Licht-Block sitzt, ist zugleich der Grund, warum das Raster in
+**beiden** Modi aufgeht: Sonst wäre der Reglerblock im Videomodus rund 150 px länger
+als die Bühne. Gemessen bei 1280 × 900: Foto 413/398, Video 413/418.
 
 ## Offene Punkte
 

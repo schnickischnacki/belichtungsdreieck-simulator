@@ -266,11 +266,6 @@
       <div class="panel">
         <h2 id="ctrlH">Kamera einstellen</h2>
 
-        <div class="row" id="rowNd" hidden>
-          <div class="head"><label for="nd">ND-Filter</label><span class="val" id="ndV"></span></div>
-          <div class="hint">Graufilter vor dem Objektiv: nimmt Licht weg, ohne die Farben zu ändern.</div>
-          <input id="nd" type="range" min="0" max="6" step="1" value="0">
-        </div>
 
         <div class="row">
           <div class="head"><label for="ap">Blende</label><span class="val" id="apV"></span></div>
@@ -284,7 +279,7 @@
           <input id="sh" type="range" min="0" max="6" step="1" value="3">
           <div class="locked" id="shLock" hidden>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
-            <span>Gesperrt: 25 Bilder pro Sekunde, halbe Umlaufblende – daraus folgt 1/50 s. Wir halten sie bewusst fest: Erst diese Bewegungsunschärfe ergibt den gewohnten <strong>cinematischen Look</strong>. Kürzer lässt Bewegung ruckeln, länger verschmiert sie.</span>
+            <span>Bewusst festgehalten: Erst diese Bewegungsunschärfe ergibt den gewohnten <strong>cinematischen Look</strong>. Kürzer ruckelt, länger verschmiert.</span>
           </div>
         </div>
 
@@ -299,7 +294,7 @@
     <section class="a-licht">
       <div class="panel licht">
         <div class="lichtkopf">
-          <h2>Lichtsituation</h2>
+          <h2 id="lichtH">Lichtsituation</h2>
           <div class="seg" role="group" aria-label="Lichtsituation">
             <button type="button" id="lOut" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg>Draußen, Sonne</button>
             <button type="button" id="lStu" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6.6 3.6h10.8l2.1 7.2H4.5z"/><path d="M12 10.8V20"/><path d="M8.6 20h6.8"/></svg>Studiolicht</button>
@@ -309,6 +304,12 @@
           <div class="head"><label for="li">Helligkeit</label><span class="val" id="liV"></span></div>
           <div class="hint" id="liHint"></div>
           <input id="li" type="range" min="0" max="7" step="1" value="3">
+        </div>
+
+        <div class="row" id="rowNd" hidden>
+          <div class="head"><label for="nd">ND-Filter</label><span class="val" id="ndV"></span></div>
+          <div class="hint">Graufilter vor dem Objektiv: nimmt Licht weg, ohne die Farben zu ändern.</div>
+          <input id="nd" type="range" min="0" max="6" step="1" value="0">
         </div>
       </div>
     </section>
@@ -380,8 +381,9 @@ function setMode(m){
     $('simSub').textContent="Das Fünfeck: Licht, ND-Filter, Blende, ISO – die Zeit ist gesperrt.";
     $('badgeT').textContent="Du stellst eine Videokamera ein (FX30)";
     $('badgeS').textContent="Bei 25 Bildern pro Sekunde liegt die Belichtungszeit auf 1/50 s fest. Sie steht dir nicht als Stellschraube zur Verfügung – dafür nimmst du Licht mit dem ND-Filter weg.";
-    $('ctrlH').textContent="Kamera einstellen – vier Stellschrauben";
+    $('ctrlH').textContent="Kamera einstellen – Blende, Zeit, ISO";
     $('shHint').hidden=true;
+    $('lichtH').textContent="Lichtsituation und ND-Filter";
     $('task').innerHTML="<b>Aufgabe:</b> Du drehst ein Interview. Belichte korrekt und halte den Hintergrund unscharf – ohne die Belichtungszeit anzufassen, denn die ist gesperrt.";
     $('solved').textContent="Gelöst – richtig belichtet, Hintergrund unscharf, Zeit unangetastet.";
   }else{
@@ -391,6 +393,7 @@ function setMode(m){
     $('badgeS').textContent="Alle drei Stellschrauben sind frei wählbar. Eine kurze Belichtungszeit friert Bewegung ein – diese Möglichkeit hast du beim Film nicht.";
     $('ctrlH').textContent="Kamera einstellen – drei Stellschrauben";
     $('shHint').hidden=false;
+    $('lichtH').textContent="Lichtsituation";
     $('shHint').textContent="Kurze Zeit friert Bewegung ein, lange verwischt sie. Ab 1/125 s steht ein schwenkendes Motiv.";
     $('task').innerHTML="<b>Aufgabe:</b> Belichte korrekt, friere die Bewegung ein und halte den Hintergrund unscharf.";
     $('solved').textContent="Gelöst – alle drei Ziele erreicht.";
