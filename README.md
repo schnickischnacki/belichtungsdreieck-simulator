@@ -1,165 +1,121 @@
-# Belichtungs-Simulator – Foto und Video
+# Belichtung üben
 
-Interaktiver Simulator zur Belichtung für den Moodle-Kurs zur Kamerascheinprüfung
-(HS Ansbach). Regler, ein simuliertes Bild, sofortige Rückmeldung: Wer eine
-Stellschraube verändert, sieht, was mit Belichtung, Schärfentiefe,
-Bewegungsunschärfe und Rauschen passiert.
+Belichtungs-Simulator für den Moodle-Kurs zur Kamerascheinprüfung (HS Ansbach, Modul 3,
+Abschnitt 3b). Live: https://belichtungsdreieck-simulator.vercel.app – Push auf `master`
+löst den Deploy aus, der Kurs verlinkt diese Adresse.
 
-Die App hat **zwei Modi**, und der Unterschied zwischen ihnen ist der eigentliche
-Lerninhalt:
+**Seit 23.09.2026 läuft hier v2.** Die erste Fassung (eine `index.html`, Schalter
+Foto/Video und Lichtsituation) steht im Tag `v1-zwei-modi`:
+`git checkout v1-zwei-modi -- index.html` holt sie zurück.
 
-| Modus | Stellschrauben | Aufgabe |
-|---|---|---|
-| **Fotokamera** – das Belichtungs*dreieck* | Blende, Belichtungszeit, ISO | korrekt belichten, Bewegung einfrieren, Hintergrund unscharf |
-| **Videokamera** – das Belichtungs*fünfeck* | Licht, ND-Filter, Blende, **Zeit gesperrt auf 1/50 s**, ISO | korrekt belichten und Hintergrund unscharf – ohne die Zeit anzufassen |
+## Was sich gegenüber v1 ändert
 
-Die Bedienung folgt dabei dem Weg des Lichts: **vor dem Objektiv** (Lichtsituation und
-ND-Filter) und **in der Kamera** (Blende, Zeit, ISO). Der ND-Filter steht deshalb im
-Licht-Block, nicht bei den Kameraeinstellungen – er nimmt Licht weg, bevor es das
-Objektiv erreicht.
+| Wunsch (23.09.2026) | Umsetzung |
+|---|---|
+| **Schönerer Hintergrund**, weiter im Cartoon-Stil | Zwei neue Szenen: *Studio* (Interview-Set mit Fenster, Stehlampe, Lichterkette, Regal, Monstera) und *See* (Himmel, Sonne, Wolken, Hügel, Segelboot, Steg, Baum, Schilf). Jede Szene besteht aus **Tiefenebenen** (fern · Bokeh · mitte · Person · vorn), die je nach Blende unterschiedlich stark unscharf werden. Lichter (Lichterkette, Lampe, Glitzern auf dem See) werden bei offener Blende zu **Bokeh-Scheiben**. |
+| **Übersichtlichere Navigation** statt zwei unabhängiger Schalter (Foto/Video × drinnen/draußen) | **Vier Aufträge** in einer Leiste, gruppiert nach Kamera: *Foto · Dreieck* (1 Studio, 2 See) und *Video · Fünfeck* (3 Studio, 4 See). Ein Klick wählt Kamera und Ort zusammen; jeder Auftrag merkt sich seine Einstellungen. Nach dem Lösen führt „Weiter“ zum nächsten offenen Auftrag. |
+| **Mehr Spielraum** für richtige Lösungen bei realistischen Werten | Alle Regler rasten in **Drittelstufen** wie das Einstellrad einer Kamera (f/2.8–f/16, 1/30–1/4000 s, ISO 100–3200). „Foto draußen“ hat jetzt **84 statt 1** gültige Einstellung. Nach dem Lösen sammelt die App die gefundenen Lösungen und schlägt einen **anderen Weg** vor („Öffne die Blende um eine ganze Stufe – womit gleichst du aus?“). |
+| **Erklärungen an den Reglern** | Jeder Regler hat einen **i-Knopf**, der eine Wissenskarte aufklappt: kleine Grafik, die live auf den eingestellten Wert reagiert, dazu *Licht*, *Nebenwirkung* und ein Satz zur aktuellen Einstellung. |
 
-Dazu zwei Lichtsituationen: **draußen bei Sonne** (hell, nicht regelbar – hier hilft
-nur der ND-Filter) und **Studiolicht** (in Blendenstufen regelbar, „halb so hell =
-eine Blendenstufe weniger").
+Weitere Änderungen:
 
-Verortung: **Modul 3 – Kamera konfigurieren**, Abschnitt 3b „Richtig belichten".
+- **Kameradisplay im Bild:** Zeit, Blende (Sony-Schreibweise `F4.0`), ISO und die **MM-Anzeige**
+  (−2.0 … +2.0 in Drittelschritten, blinkt darüber hinaus) – so, wie es die Kursseite
+  „Manuell richtig belichten mit MANUAL METERING (FX30)“ beschreibt. Im Video
+  `STBY`, sobald alles stimmt `● REC` mit laufendem Timecode. Oben rechts drei Zeichen für
+  die Ziele: Sonne (Belichtung), Irisblende (Hintergrund unscharf), Hand bzw. Schloss (Bewegung
+  bzw. feste Zeit) – grün, sobald erreicht.
+- **Foto = Standbild, Video = bewegtes Bild:** Im Foto steht die Person still und winkt;
+  die Hand verwischt mit Nachziehern, solange die Zeit zu lang ist. Im Video spricht sie,
+  blinzelt und gestikuliert, mit Ansteckmikrofon.
+- **Fotoaufträge sind das reine Dreieck:** Das Licht ist im Foto fest (Studio fest
+  eingerichtet, draußen Sonne). Licht im Set und ND-Filter gibt es nur im Video – das
+  schärft den Unterschied Dreieck/Fünfeck und spart Bedienelemente.
+- **Das Bild bleibt stehen**, während man durch die Regler scrollt (Handy und Laptop).
+- **Helligkeitsverlauf auf jeder Reglerspur:** Die helle Seite ist die, auf der mehr Licht ankommt.
+- Überbelichtung **frisst Lichter aus** statt einen weißen Schleier zu legen; Rauschen ist
+  ein Korn, das im Video lebt.
 
 ## Aufbau
 
-Eine einzige statische `index.html` – kein Build, keine Dependencies, kein Backend.
-Alles inline: SVG-Szene, Simulationslogik, Styles.
+Statisch, kein Build, keine Abhängigkeiten.
 
 ```
-index.html          die App
-scorm/              imsmanifest.xml für die SCORM-Variante (siehe unten)
+index.html        Gerüst
+css/app.css       Gestaltung (Design-Tokens wie Kursseiten und Objektivwechsel-App)
+js/model.js       Rechenmodell – läuft im Browser und in Node
+js/scene.js       Szenen und Person als SVG
+js/app.js         Bedienung, Rückmeldung, Wissenskarten, SCORM/postMessage
+tools/loesungen.js Lösungszählung und Selbstprüfung des Modells
+scorm/            imsmanifest.xml für die SCORM-Variante
 ```
 
 ## Lokal ansehen
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8123
 ```
 
-Im Projekt-Repo der Masterarbeit gibt es dafür die Startkonfiguration
-`belichtungsdreieck` in `.claude/launch.json`.
+Im Projekt der Masterarbeit gibt es dafür die Startkonfiguration `belichtungsdreieck` in
+`.claude/launch.json` (Port 8123). Über `file://` läuft die App ebenfalls (keine Module).
 
-## Deploy auf Vercel
+## Rechenmodell
 
-Repo in Vercel importieren, Framework-Preset **„Other"**, Build Command leer lassen,
-Output Directory auf den Repo-Root. Keine Env-Variablen. Es ist eine statische Datei.
-Push auf `master` löst den Deploy aus.
+In Drittelblenden, ganzzahlig – dadurch keine Rundungsfehler zwischen Nominalwerten
+(1/125 s ist rechnerisch 1/128 s):
+
+```
+Fehler(1/3) = 3 · (EV_Szene + Licht − ND) − ((9 + i_Blende) + (15 + j_Zeit) − k_ISO)
+```
+
+`EV_Szene` bei ISO 100: Studio 9, See 15. Licht im Set −3 … +3 Blenden (nur Video, nur
+Studio), ND 0 … 6 Blenden (0,3 … 1,8). Positiv = zu hell. Die MM-Anzeige ist genau
+dieser Fehler.
+
+**Ziele:**
+
+| Ziel | Bedingung | Bemerkung |
+|---|---|---|
+| richtig belichtet | \|MM\| ≤ 0.3 | ein Klick daneben zählt noch; ideal ist 0.0 |
+| Hintergrund unscharf | f/5.6 oder offener | aus derselben Unschärfekurve wie v1 (`dof ≥ 4`) |
+| Hand eingefroren (Foto) | 1/125 s oder kürzer | Schwelle aus v1 übernommen |
+| Zeit (Video) | fest 1/50 s | 25p, halbe Bilddauer |
+
+Jede Marke leitet sich aus demselben Wert ab, der das Bild zeichnet – die Regel aus v1
+gilt weiter.
+
+**Lösungszahlen** (`node tools/loesungen.js`, Stand 23.09.2026):
+
+| Auftrag | gültige Einstellungen | davon MM 0.0 | Start |
+|---|---:|---:|---|
+| 1 Foto · Studio | 210 | 70 | f/11 · 1/60 · ISO 400 → MM −2.0 |
+| 2 Foto · See | 84 | 28 | f/8 · 1/250 · ISO 400 → +3 Blenden (blinkt) |
+| 3 Video · Studio | 599 | 199 | f/8 · ISO 1600 → MM +1.3 |
+| 4 Video · See | 28 | 9 | f/5.6 · ISO 800 → +7 1/3 Blenden (blinkt) |
+
+Zum Vergleich v1: 9 / **1** / 12 / 6. Im Video zählen ND- und Lichtvarianten mit; als
+Blende/ISO-Paare sind es 112 (Studio) und 28 (See). **Vor jeder Änderung an Bereichen,
+Schwellen oder Szenenhelligkeit das Skript laufen lassen** – es bricht ab, wenn ein
+Auftrag schon beim Start gelöst ist oder zu wenige Lösungen hat.
 
 ## Einbau in Moodle
 
-Im Projekt ist **SCORM als Erstwahl dokumentiert** (`SecondBrain Thesis/06_Prototyp_Moodle/Gestaltungsmöglichkeiten Moodle.md`, Abschnitt 3.3). Die iframe-Variante ist vorbereitet, hebt die Entscheidung aber nicht auf – sie ist der einfachere Update-Weg, kostet dafür den automatischen Aktivitätsabschluss.
+Link/URL-Aktivität (cmid `259282` im Arbeitskurs 8273, Modul 3), Anzeige „Neues Fenster“ (fremde iframes brauchen einen
+Whitelist-Eintrag). Alternativ SCORM: `index.html`, `css/`, `js/` und
+`scorm/imsmanifest.xml` (ins Zip-Root) packen. Die App meldet über SCORM 1.2 oder
+`postMessage({type:'belichtung:progress', score, status})`: **25 Punkte je Auftrag**,
+`completed` nach allen vier.
 
-### Variante A – Link/URL-Aktivität (im Kurs umgesetzt)
+## Offen – fachlich vor dem Einsatz prüfen
 
-Wie bei der Objektivwechsel-App: Link/URL-Aktivität, Anzeige „Neues Fenster".
-Die Instanz erlaubt keine fremden iframes ohne Whitelist-Eintrag – deshalb ist der
-Link der zuverlässige Weg.
-
-### Variante B – SCORM-Paket
-
-`index.html` + `scorm/imsmanifest.xml` (Manifest ins Zip-Root) als ZIP packen und als
-SCORM-Lernpaket hochladen. Dann meldet die App Score und `lesson_status` per
-SCORM 1.2 an Moodle – Aktivitätsabschluss ohne Zusatzcode.
-
-Beide Wege laufen aus derselben `index.html`: Findet sie eine SCORM-API, meldet sie
-darüber; findet sie keine, schickt sie
-`postMessage({type:'belichtung:progress', score, status})` ans Parent-Fenster.
-**Score:** 50 pro gelöstem Modus, 100 wenn beide gelöst sind.
-
-## Simulationsmodell
-
-Gerechnet wird in Blendenstufen (EV), nicht in Messwerten:
-
-```
-Fehler = (EV_Szene − ND) − ( log2(N² · t⁻¹) − log2(ISO/100) )
-```
-
-`EV_Szene` ist 15 bei Sonne und 6–13 im Studio (Vorgabe 9). Ein Fehler von 0 ist
-korrekt belichtet, Toleranz ±0,5 Blenden. Schärfentiefe folgt aus der Blendenzahl,
-Rauschen aus dem ISO-Wert.
-
-**Reglerbereiche** (bewusst eng gehalten, damit jeder Schritt eine Entscheidung ist):
-Blende f/2.8–f/16, Belichtungszeit 1/15–1/1000 s, ISO 100–1600, ND 0–6 Blenden.
-Vor jeder Änderung dieser Bereiche die Lösbarkeit nachrechnen. Stand: Foto/Studio 9,
-Foto/draußen **1**, Video/Studio 12, Video/draußen 6 Lösungen bei Vorgabehelligkeit.
-Der Engpass draußen im Fotomodus ist die Belichtung, nicht die Bewegung: Bei EV 15 und
-einer Blende, die für den unscharfen Hintergrund gebunden ist, balanciert nur
-f/5.6 · 1/1000 s · ISO 100. Fachlich stimmt das (pralle Sonne lässt wenig Spielraum),
-verträgt aber keine weitere Einengung. Bewusst ein didaktisches Modell: Es zeigt *Richtung* und
-*Zielkonflikt*, keine fotometrisch exakten Werte.
-
-**Die Szene** ist eine Halbnahe (Kopf und Schultern, unten angeschnitten) mit einem
-Lichtpool hinter der Person und einer leichten Vignette. Beides ist kein Zierrat: Ohne
-Trennung vom Hintergrund liest sich der Unterschied zwischen offener und geschlossener
-Blende nicht. Im Videomodus trägt die Person nur noch einen Hauch Unschärfe (0,7 statt
-2,4) – bei 1/50 s sitzt eine Interviewpartnerin praktisch still, und eine dauerhaft
-weiche Person kann sich nie vom Hintergrund abheben.
-
-**Bewegungsunschärfe** wird im Fotomodus aus der Belichtungszeit abgeleitet
-(Referenz **1/125 s = eingefroren**; in der Praxis stehen Portraits je nach Bewegung
-schon ab 1/60–1/125 s. Die früher bei 1/250 s gezeichnete Unschärfe liegt jetzt bei
-1/60 s – das schafft mehrere gültige Lösungen statt einer einzigen) und im Videomodus als konstanter, erwünschter Wert
-gezeichnet – bei 1/50 s ist Bewegungsunschärfe kein Fehler, sondern das Ziel.
-
-> **Regel im Code:** Die Marke unter dem Bild leitet sich aus demselben Wert ab, der
-> die Unschärfe zeichnet (`motOK = motB < 0.5`). Damit kann die Rückmeldung nicht mehr
-> „eingefroren" sagen, während das Bild sichtbar verwischt ist – genau dieser Fehler
-> trat vorher bei 1/250 s auf.
-
-## Fachlicher Hintergrund: warum zwei Modi
-
-Der Abgleich mit `Old Moodle Kurs/8_Richtig Belichten/Belichtungsdreieck.html`
-hatte 2026-07-16 zwei Konflikte ergeben:
-
-1. **Der Kurs lehrt kein Dreieck, sondern ein Fünfeck.** Die Quellseite nennt fünf
-   Wege zu weniger Belichtung – Licht im Set, ND-Filter, Blende, Belichtungszeit,
-   ISO – und sagt ausdrücklich, dass Punkt 1 und 2 „beim klassischen
-   Belichtungsdreieck der Fotografie nicht berücksichtigt" werden. Auch das
-   Kursvideo heißt `11_belichtungsdrei-vier-fünfeck.mp4`.
-2. **Die alte Aufgabe trainierte gegen die Kursregel.** Die Quelle: „für ein
-   cinematische Seherfahrung wollen wir die Belichtungszeit unbedingt 1/50s behalten
-   bei 25fps". Die Aufgabe verlangte „friere die Bewegung ein" – wer löste, tat
-   genau das, was der Kurs verbietet (180°-Regel).
-
-**Beides ist mit den zwei Modi aufgelöst**, statt einen der beiden Konflikte
-wegzudefinieren: Der Fotomodus bleibt das Dreieck und ist als Fotografie
-gekennzeichnet; der Videomodus sperrt die Zeit auf 1/50 s, nennt die 25 Bilder und
-ergänzt Licht und ND-Filter zum Fünfeck. Der Wechsel zwischen beiden *ist* die
-Lernerfahrung – der Unterschied wird erlebbar statt behauptet.
-
-## Gestaltung
-
-Die App nutzt die Design-Tokens der Moodle-Kursseiten und der Objektivwechsel-App
-(Cream `#f6f4f0`, Ink `#1e2530`, Akzent `#c1651f`, Serif für Zitate). Der frühere
-dunkle Eigenstil ist damit aufgelöst; dunkel bleibt nur die Bildfläche selbst, weil
-sie einen Monitor darstellt.
-
-Geprüft auf Desktop (1280), iPad (768) und Mobil (375): einspaltig ab unter 900 px,
-kein horizontaler Überlauf, alle Bedienelemente mindestens 44 px hoch.
-
-Die Kopfleiste hat drei Segmente – **Intro · Foto · Video**; das Intro ist damit
-jederzeit erreichbar, ohne dass eine Fußzeile nötig wäre.
-
-**Raster:** ab 900 px zwei eigenständige Spalten, die jeweils für sich stapeln –
-links `Bühne + Marken` und darunter `Aufgabe / Hinweis / Gelöst`, rechts
-`Lichtsituation und ND-Filter` und darunter `Kamera einstellen`. Bewusst keine
-Rasterzeilen: Sonst wartet eine Zelle auf die Höhe der anderen und es entstehen
-Löcher, sobald ein Modus mehr Inhalt hat. Einspaltig ergibt die DOM-Reihenfolge von
-selbst Bühne → Aufgabe → Licht → Regler.
-
-Dass der ND-Filter im Licht-Block sitzt, hält den Reglerblock in beiden Modi ähnlich
-hoch (398 px im Foto-, 418 px im Videomodus statt 564).
-
-## Offene Punkte
-
-- Kein Narrativ-Anschluss an Mara / Episode 3 (Seeufer, Amt, Labor) – die App steht
-  fachlich für sich.
-- Die Toleranz der Belichtungsaufgabe (±0,5 Blenden) ist gesetzt, nicht aus dem
-  Kursmaterial abgeleitet.
-- Die Studio-Lichtstufen sind relativ angegeben („+1 Blende"), nicht in Lux oder Watt –
-  bewusst, weil der Kurs die Beziehung „doppelt so hell = eine Blende" lehrt und keine
-  absoluten Werte.
+- **Toleranz ±0.3** ist gesetzt, nicht aus dem Kursmaterial abgeleitet (Kurs: „Ziel ist im
+  Allgemeinen MM 0.0“).
+- **Einfrier-Schwelle 1/125 s** für die winkende Hand stammt aus der Durchsicht von v1
+  (01.09.2026), keine Quelle.
+- **Rauschen** ist didaktisch überzeichnet: Ab ISO 1600 sichtbar, damit der Zielkonflikt
+  erkennbar wird. Die FX30 ist bei ISO 1600 in der Praxis deutlich sauberer.
+- Wissenskarte ISO: „Wenn du das Licht woanders herholen kannst, ist das meist die
+  bessere Wahl.“ – Faustregel, keine Quelle.
+- Die Szenenhelligkeit (Studio EV 9, Sonne EV 15) ist plausibel gewählt, nicht gemessen.
+- Kein Anschluss an die Kursgeschichte; die App steht fachlich für sich.
+- Erprobung mit Studierenden steht aus.

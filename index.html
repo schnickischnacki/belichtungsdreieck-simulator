@@ -3,520 +3,147 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Belichtung üben – Foto und Video</title>
-<meta name="description" content="Belichtung zum Ausprobieren: das Belichtungsdreieck der Fotokamera und das Fünfeck der Videokamera mit gesperrter Belichtungszeit.">
-<style>
-  /* Design-Tokens – identisch zu den Moodle-Seiten (modul-*-inline.html)
-     und zur Objektivwechsel-App. */
-  :root{
-    --accent:#c1651f; --ink:#1e2530; --cream:#f6f4f0; --cream-warm:#fbeada;
-    --line:#e4dfd7; --gold:#ffd591; --text:#1e2530; --muted:#4a5566;
-    --danger:#a32e22; --danger-bg:#fbe6e3;
-    --ok:#1f6b3f; --ok-bg:#e6f2ea;
-    --warn:#8a5a12; --warn-bg:#fbeada;
-    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
-    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    --shadow:0 2px 8px rgba(30,37,48,.06),0 8px 24px rgba(30,37,48,.08);
-  }
-  *{box-sizing:border-box}
-  html,body{min-height:100dvh}
-  body{margin:0;background:var(--cream);color:var(--text);font-family:var(--sans);
-       line-height:1.55;-webkit-font-smoothing:antialiased;
-       padding:16px 16px calc(16px + env(safe-area-inset-bottom));}
-  :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
-  h1,h2,h3{margin:0;letter-spacing:-.01em}
-
-  .wrap{max-width:1180px;margin:0 auto}
-  .card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
-  .stripe{height:8px;background:repeating-linear-gradient(135deg,#c1651f 0 18px,#1e2530 18px 30px)}
-  .kicker{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin:0 0 8px}
-
-  /* ---------- Intro ---------- */
-  #intro{max-width:720px;margin:0 auto}
-  #intro .body{padding:22px}
-  #intro h1{font-size:1.5rem;font-weight:600;margin:0 0 10px}
-  #intro .lead{font-size:1rem;margin:0 0 12px}
-  #intro p.sub{font-size:.94rem;color:var(--muted);margin:0 0 16px}
-  .modes{display:grid;gap:12px;margin:0 0 16px}
-  @media(min-width:640px){.modes{grid-template-columns:1fr 1fr}}
-  .mode-card{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .mode-card .ttl{display:flex;align-items:center;gap:9px;font-weight:600;margin-bottom:6px}
-  .mode-card .ttl svg{width:22px;height:22px;flex:0 0 auto}
-  .mode-card p{margin:0;font-size:.9rem;color:var(--muted)}
-  .mode-card .fx{margin-top:8px;font-family:var(--mono);font-size:.72rem;color:var(--ink);
-                 background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px 8px;display:inline-block}
-  .how{list-style:none;margin:0 0 16px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
-  .how li{position:relative;padding-left:16px;font-size:.92rem}
-  .how li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-  .btn{appearance:none;border:0;cursor:pointer;font-family:inherit;min-height:52px;
-       padding:0 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:1rem;
-       transition:opacity .15s ease}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px}
-  .btn svg{width:19px;height:19px;flex:0 0 auto}
-  .btn:hover{opacity:.9}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
-  .btn-row{display:flex;flex-wrap:wrap;gap:10px}
-  @media(max-width:520px){.btn{width:100%}}
-
-  /* ---------- Simulator ---------- */
-  #sim[hidden]{display:none}
-  .top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:0 0 14px}
-  .top h1{font-size:1.25rem;font-weight:600}
-  .top .sub{font-size:.85rem;color:var(--muted)}
-  .switch{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
-  .switch button{appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:600;
-                 padding:9px 16px;min-height:44px;border-radius:999px;background:transparent;color:var(--muted);
-                 display:inline-flex;align-items:center;gap:7px}
-  .switch button[aria-pressed=true]{background:var(--ink);color:var(--cream)}
-  .switch svg{width:17px;height:17px;flex:0 0 auto}
-  .switch button.seg-ghost{color:var(--muted);font-weight:600}
-  .switch button.seg-ghost:hover{color:var(--ink)}
-  .seg-sep{width:1px;align-self:stretch;margin:6px 2px;background:var(--line);flex:0 0 auto}
-
-  /* Zwei eigenstaendige Spalten: jede stapelt fuer sich, damit keine Zeile
-     auf die Hoehe der anderen wartet. Einspaltig ergibt die DOM-Reihenfolge
-     von selbst Buehne -> Aufgabe -> Licht -> Regler. */
-  .cols{display:grid;gap:16px;grid-template-columns:1fr}
-  @media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(340px,.78fr);align-items:start}}
-  .spalte{display:grid;gap:16px;align-content:start}
-  .a-licht .panel.licht{margin-top:0}
-
-  .badge{display:flex;gap:11px;align-items:flex-start;background:var(--cream-warm);border:1px solid var(--accent);
-         border-radius:12px;padding:12px 14px;margin:0 0 12px}
-  .badge svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px}
-  .badge b{display:block;font-size:.92rem}
-  .badge span{font-size:.86rem;color:var(--muted)}
-
-  .stage{background:#0f1115;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .stage svg{width:100%;display:block}
-
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
-  .chip{font-size:.8rem;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid transparent}
-  .chip.ok{background:var(--ok-bg);color:var(--ok);border-color:#bcd9c8}
-  .chip.warn{background:var(--warn-bg);color:var(--warn);border-color:#e8cb9a}
-  .chip.bad{background:var(--danger-bg);color:var(--danger);border-color:#f0c4bd}
-  .chip.info{background:var(--cream);color:var(--muted);border-color:var(--line)}
-
-  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-  .panel + .panel{margin-top:12px}
-  .panel h2{font-size:.95rem;font-weight:600;margin:0 0 12px}
-  .seg{display:flex;gap:8px;margin:0 0 14px}
-  .seg button{flex:1;appearance:none;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:600;
-              min-height:44px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);
-              background:var(--cream);color:var(--muted)}
-  .seg button[aria-pressed=true]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
-  .panel.licht{margin-top:12px}
-  .lichtkopf{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 12px}
-  .lichtkopf h2{margin:0;flex:0 0 auto}
-  .lichtkopf .seg{margin:0;flex:1 1 300px}   /* rutscht auf eine eigene Zeile, bevor die Beschriftung umbricht */
-  .panel.licht .hint{font-size:.76rem}
-  .seg button{display:inline-flex;align-items:center;justify-content:center;gap:8px}
-  .seg svg{width:17px;height:17px;flex:0 0 auto}
-  @media(max-width:420px){.seg button{font-size:.8rem;gap:6px;padding:8px 6px}.seg svg{width:15px;height:15px}}
-
-  .row{display:grid;grid-template-columns:1fr;gap:4px;margin:0 0 14px}
-  .row:last-child{margin-bottom:0}
-  .row[hidden],.locked[hidden],.hint[hidden]{display:none}
-  .row .head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .row label{font-size:.88rem;color:var(--muted);font-weight:600}
-  .row .val{font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--ink)}
-  .row .hint{font-size:.78rem;color:var(--muted)}
-  input[type=range]{width:100%;accent-color:var(--accent);height:44px;margin:0;cursor:pointer;touch-action:pan-y}
-  input[type=range]:disabled{cursor:not-allowed;accent-color:#b9bec7;opacity:.75}
-  .locked{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--muted);
-          background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin-top:4px}
-  .locked svg{width:13px;height:13px;flex:0 0 auto}
-
-  .task{margin-top:12px;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:.9rem;color:var(--muted)}
-  .task b{color:var(--text)}
-  .tip{margin-top:10px;background:var(--cream-warm);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:.89rem}
-  .tip[hidden]{display:none}
-  .solved{margin-top:10px;background:var(--ok-bg);border:1px solid #bcd9c8;color:var(--ok);
-          border-radius:12px;padding:13px 15px;font-size:.94rem;font-weight:600}
-  .solved[hidden]{display:none}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
-</style>
+<title>Belichtung üben</title>
+<meta name="description" content="Belichtung zum Ausprobieren: das Belichtungsdreieck der Fotokamera und das Fünfeck der Videokamera – in vier kurzen Aufträgen.">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<!-- ============ Intro ============ -->
-<section id="intro" class="card" aria-labelledby="introH">
-  <div class="stripe" aria-hidden="true"></div>
-  <div class="body">
-    <p class="kicker">Bevor es losgeht</p>
-    <h1 id="introH">Belichten – am Fotoapparat und an der Videokamera</h1>
-    <p class="lead">Korrekte Belichtung entsteht aus dem Zusammenspiel mehrerer Stellschrauben. Änderst du eine, musst du eine andere gegensteuern – sonst ist das Bild zu hell oder zu dunkel. Hier kannst du das gefahrlos ausprobieren.</p>
-    <p class="sub">Der entscheidende Punkt: <strong>Für Foto und Video gelten nicht dieselben Regeln.</strong> Beim Film ist eine der Stellschrauben gesperrt – und genau das ändert dein Vorgehen.</p>
-
-    <div class="modes">
-      <div class="mode-card">
-        <div class="ttl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#c1651f" stroke-width="1.7" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.8a1 1 0 0 1 .86-.48h5.68a1 1 0 0 1 .86.48L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>
-          Fotokamera
-        </div>
-        <p>Drei Stellschrauben, alle frei: Blende, Belichtungszeit, ISO. Eine kurze Zeit friert Bewegung ein.</p>
-        <div class="fx">das Belichtungs<b>dreieck</b></div>
-      </div>
-      <div class="mode-card">
-        <div class="ttl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#c1651f" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="7" width="13" height="10" rx="2.2"/><path d="M15.5 11.2l5-2.8v7.2l-5-2.8z"/><circle cx="8" cy="12" r="2.3"/></svg>
-          Videokamera
-        </div>
-        <p>Die Belichtungszeit ist bei 25 Bildern pro Sekunde auf 1/50 s festgelegt. Sie fällt als Regler aus – dafür kommen Licht und ND-Filter dazu.</p>
-        <div class="fx">das Belichtungs<b>fünfeck</b></div>
-      </div>
+<div class="app">
+  <header class="kopf">
+    <div class="marke">
+      <span class="marke-streifen" aria-hidden="true"></span>
+      <span class="marke-titel">Belichtung üben</span>
     </div>
+    <button type="button" class="knopf-leise" id="btnIntro" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>
+      Einführung
+    </button>
+  </header>
 
-    <ul class="how">
-      <li>Wähle oben den Modus – <strong>Foto</strong> oder <strong>Video</strong>. Die Aufgabe wechselt mit.</li>
-      <li>Stell die Lichtsituation ein: <strong>draußen</strong> ist es hell und du kannst nichts daran ändern, im <strong>Studio</strong> regelst du das Licht selbst.</li>
-      <li>Schieb die Regler und beobachte das Bild. Die Marken darunter sagen dir, was schon stimmt.</li>
-      <li>Ein Ziel ist erst erfüllt, wenn du es <em>im Bild</em> siehst.</li>
-    </ul>
+  <!-- ============ Einführung ============ -->
+  <section id="intro" class="intro karte" aria-labelledby="introH">
+    <div class="streifen" aria-hidden="true"></div>
+    <div class="intro-innen">
+      <p class="kicker">Bevor es losgeht</p>
+      <h1 id="introH">Belichten – mit der Foto&shy;kamera und mit der Video&shy;kamera</h1>
+      <p class="lead">Ein Bild wird richtig hell, wenn die Stellschrauben zusammenpassen. Drehst du an einer, musst du an einer anderen gegensteuern. Hier probierst du das in <strong>vier kurzen Aufträgen</strong> aus – im Studio und draußen am See.</p>
 
-
-    <div class="btn-row">
-      <button class="btn" id="startFoto" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.8a1 1 0 0 1 .86-.48h5.68a1 1 0 0 1 .86.48L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Fotokamera</button>
-      <button class="btn ghost" id="startVideo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="7" width="13" height="10" rx="2.2"/><path d="M15.5 11.2l5-2.8v7.2l-5-2.8z"/><circle cx="8" cy="12" r="2.3"/></svg>Videokamera</button>
-    </div>
-  </div>
-</section>
-
-<!-- ============ Simulator ============ -->
-<main id="sim" class="wrap" hidden>
-  <div class="top">
-    <div>
-      <h1 id="simTitle">Belichtung üben</h1>
-      <div class="sub" id="simSub"></div>
-    </div>
-    <div class="switch">
-      <button type="button" id="mIntro" class="seg-ghost" title="Zurück zur Erklärung">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3.5 10.6 12 3.8l8.5 6.8"/><path d="M5.6 9.3V19a1 1 0 0 0 1 1h3.2v-5.1h4.4V20h3.2a1 1 0 0 0 1-1V9.3"/></svg>
-        Intro
-      </button>
-      <span class="seg-sep" aria-hidden="true"></span>
-      <span role="group" aria-label="Kameratyp wählen" style="display:inline-flex;gap:4px;">
-      <button type="button" id="mFoto" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.8a1 1 0 0 1 .86-.48h5.68a1 1 0 0 1 .86.48L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>
-        Foto
-      </button>
-      <button type="button" id="mVideo" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="7" width="13" height="10" rx="2.2"/><path d="M15.5 11.2l5-2.8v7.2l-5-2.8z"/><circle cx="8" cy="12" r="2.3"/></svg>
-        Video
-      </button>
-      </span>
-    </div>
-  </div>
-
-  <div class="badge" id="badge">
-    <svg id="badgeIcon" viewBox="0 0 24 24" fill="none" stroke="#c1651f" stroke-width="1.7" aria-hidden="true"></svg>
-    <div><b id="badgeT"></b><span id="badgeS"></span></div>
-  </div>
-
-  <div class="cols">
-    <div class="spalte">
-    <section class="a-buehne">
-      <div class="stage">
-        <svg id="scene" viewBox="0 0 400 225" role="img" aria-labelledby="sceneDesc">
-          <title id="sceneDesc">Simuliertes Bild: eine Person halbnah vor einem Hintergrund</title>
-          <defs>
-            <filter id="dof" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur id="dofB" stdDeviation="0"/></filter>
-            <filter id="motion" x="-45%" y="-25%" width="190%" height="150%"><feGaussianBlur id="motB" stdDeviation="0 0"/></filter>
-            <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-            <!-- Lichtpool hinter der Person: trennt sie vom Hintergrund, wie ein Hintergrundlicht am Set -->
-            <radialGradient id="pool" cx="50%" cy="38%" r="56%">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.20"/>
-              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-            </radialGradient>
-            <radialGradient id="vig" cx="50%" cy="42%" r="74%">
-              <stop offset="52%" stop-color="#000000" stop-opacity="0"/>
-              <stop offset="100%" stop-color="#000000" stop-opacity="0.16"/>
-            </radialGradient>
-          </defs>
-
-          <g filter="url(#dof)">
-            <rect id="bgSky" x="0" y="0" width="400" height="225" fill="#5a6b7c"/>
-            <rect id="bgFloor" x="0" y="146" width="400" height="79" fill="#4c5c6b"/>
-            <rect x="0" y="0" width="400" height="225" fill="url(#pool)"/>
-            <circle id="b1" cx="52" cy="50" r="17" fill="#5c7a99"/>
-            <circle id="b2" cx="348" cy="42" r="21" fill="#6b8bad"/>
-            <circle id="b3" cx="312" cy="108" r="12" fill="#4d6883"/>
-            <circle id="b4" cx="72" cy="122" r="10" fill="#5c7a99"/>
-            <circle id="b5" cx="128" cy="58" r="8" fill="#6b8bad"/>
-          </g>
-
-          <g id="subject" filter="url(#motion)">
-            <circle cx="200" cy="88" r="23" fill="#e8c9a0"/>
-            <rect x="177" y="112" width="46" height="78" rx="13" fill="#c9502f"/>
-            <rect x="189" y="186" width="8" height="32" fill="#3a3a3a"/>
-            <rect x="203" y="186" width="8" height="32" fill="#3a3a3a"/>
-          </g>
-
-          <rect x="0" y="0" width="400" height="225" fill="url(#vig)"/>
-          <rect id="expo" x="0" y="0" width="400" height="225" fill="#fff" opacity="0"/>
-          <rect id="noise" x="0" y="0" width="400" height="225" filter="url(#grain)" opacity="0"/>
-        </svg>
-      </div>
-      <div class="chips" id="chips"></div>
-    </section>
-    <section class="a-info">
-      <div class="task" id="task"></div>
-      <div class="tip" id="tip" hidden></div>
-      <div class="solved" id="solved" hidden></div>
-    </section>
-    </div>
-
-    <div class="spalte">
-    <section class="a-licht">
-      <div class="panel licht">
-        <div class="lichtkopf">
-          <h2 id="lichtH">Lichtsituation</h2>
-          <div class="seg" role="group" aria-label="Lichtsituation">
-            <button type="button" id="lOut" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg>Draußen, Sonne</button>
-            <button type="button" id="lStu" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6.6 3.6h10.8l2.1 7.2H4.5z"/><path d="M12 10.8V20"/><path d="M8.6 20h6.8"/></svg>Studiolicht</button>
+      <div class="modi">
+        <div class="modus-karte">
+          <div class="modus-bild" id="introDreieck"></div>
+          <div>
+            <h2>Fotokamera</h2>
+            <p>Drei Stellschrauben, alle frei: Blende, Belichtungszeit, ISO. Eine kurze Zeit friert Bewegung ein.</p>
+            <p class="modus-etikett">das Belichtungs<b>dreieck</b></p>
           </div>
         </div>
-        <div class="row" id="rowLight">
-          <div class="head"><label for="li">Helligkeit</label><span class="val" id="liV"></span></div>
-          <div class="hint" id="liHint"></div>
-          <input id="li" type="range" min="0" max="7" step="1" value="3">
-        </div>
-
-        <div class="row" id="rowNd" hidden>
-          <div class="head"><label for="nd">ND-Filter</label><span class="val" id="ndV"></span></div>
-          <div class="hint">Graufilter vor dem Objektiv: nimmt Licht weg, ohne die Farben zu ändern.</div>
-          <input id="nd" type="range" min="0" max="6" step="1" value="0">
+        <div class="modus-karte">
+          <div class="modus-bild" id="introFuenfeck"></div>
+          <div>
+            <h2>Videokamera</h2>
+            <p>Bei 25 Bildern pro Sekunde liegt die Zeit fest auf 1/50&nbsp;s (grauer Punkt). Dafür kommen Licht im Set und ND-Filter dazu.</p>
+            <p class="modus-etikett">das Belichtungs<b>fünfeck</b></p>
+          </div>
         </div>
       </div>
-    </section>
-    <section class="a-kamera">
-      <div class="panel">
-        <h2 id="ctrlH">Kamera einstellen</h2>
 
+      <ol class="so-gehts">
+        <li><span class="sg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.4"/><circle cx="15" cy="16" r="2.4"/></svg></span>
+          <span>Schieb die Regler oder tipp auf <b>‹&nbsp;›</b>. Ein Tipp ist eine Drittelstufe – wie ein Klick am Einstellrad.</span></li>
+        <li><span class="sg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 15h18"/><path d="M5 12v3M9 13v2M12 11v4M15 13v2M19 12v3"/><path d="M12 18l-2 3h4z"/></svg></span>
+          <span>Unten im Bild zeigt die Kamera die Belichtung an. <b>MM 0.0</b> heißt: richtig belichtet.</span></li>
+        <li><span class="sg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></span>
+          <span>Hinter jedem <b>i</b> steht, was eine Stellschraube macht – und was sie nebenbei im Bild verändert.</span></li>
+      </ol>
 
-        <div class="row">
-          <div class="head"><label for="ap">Blende</label><span class="val" id="apV"></span></div>
-          <div class="hint">Kleine Zahl = offen = wenig Schärfentiefe, also unscharfer Hintergrund.</div>
-          <input id="ap" type="range" min="0" max="5" step="1" value="1">
-        </div>
+      <div class="knopf-reihe">
+        <button type="button" class="knopf" id="btnStart">Los geht’s – Auftrag 1
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="knopf knopf-rand" id="btnZurueck" hidden>Zurück zum Auftrag</button>
+      </div>
+    </div>
+  </section>
 
-        <div class="row">
-          <div class="head"><label for="sh">Belichtungszeit</label><span class="val" id="shV"></span></div>
-          <div class="hint" id="shHint"></div>
-          <input id="sh" type="range" min="0" max="6" step="1" value="3">
-          <div class="locked" id="shLock" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
-            <span>Bewusst festgehalten: Erst diese Bewegungsunschärfe ergibt den gewohnten <strong>cinematischen Look</strong>. Kürzer ruckelt, länger verschmiert.</span>
+  <!-- ============ Übung ============ -->
+  <main id="sim" class="sim" hidden>
+    <nav class="auftraege" aria-label="Aufträge" id="auftraege"></nav>
+
+    <div class="spalten">
+      <div class="links">
+        <div class="buehne-halter" id="buehneHalter">
+          <div class="bild" id="bild" role="img" aria-label="Simuliertes Kamerabild">
+            <div class="belichtung" id="belichtung">
+              <div class="e" id="eFern"></div>
+              <svg class="e ebene bokeh" id="eBokeh" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+              <div class="e" id="eMitte"></div>
+              <div class="e" id="ePerson"></div>
+              <div class="e" id="eVorn"></div>
+            </div>
+            <div class="korn" id="korn" aria-hidden="true"></div>
+            <div class="blitz" id="blitz" aria-hidden="true"></div>
+
+            <div class="hud" aria-hidden="true">
+              <div class="hud-oben">
+                <span class="hud-modus" id="hudModus"></span>
+                <span class="hud-geschafft" id="hudGeschafft">
+                  <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Alle Ziele erreicht</span>
+                <span class="hud-ziele" id="hudZiele"></span>
+              </div>
+              <div class="af" id="af"><i></i><i></i><i></i><i></i></div>
+              <div class="hud-unten">
+                <span id="hudZeit"></span>
+                <span id="hudBlende"></span>
+                <span id="hudIso"></span>
+                <span class="hud-mm">
+                  <span class="mm-skala" id="mmSkala"></span>
+                  <span class="mm-wert" id="mmWert"></span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="head"><label for="is">ISO</label><span class="val" id="isV"></span></div>
-          <div class="hint">Verstärkt das Signal. Hohe Werte rauschen.</div>
-          <input id="is" type="range" min="0" max="4" step="1" value="2">
-        </div>
+        <section class="karte auftrag-karte" aria-labelledby="aTitel">
+          <p class="kicker" id="aKicker"></p>
+          <h2 id="aTitel"></h2>
+          <p class="auftrag-text" id="aText"></p>
+          <ul class="ziele" id="ziele" aria-live="polite"></ul>
+          <div class="wissen" id="wissen-mm" hidden></div>
+          <div class="hinweis" id="hinweis" hidden></div>
+          <div class="geschafft" id="geschafft" hidden></div>
+        </section>
       </div>
-    </section>
+
+      <div class="rechts">
+        <section class="karte regler-karte" aria-labelledby="rTitel">
+          <header class="regler-kopf-karte">
+            <div class="poly" id="rPoly" aria-hidden="true"></div>
+            <div>
+              <h2 id="rTitel"></h2>
+              <p id="rSub"></p>
+            </div>
+          </header>
+          <div class="regler-gruppe" id="gVor">
+            <h3>Vor dem Objektiv</h3>
+            <p class="sonne-fest" id="sonneFest" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.3M12 19.2v2.3M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+              <span>Pralle Sonne – die kannst du nicht dimmen.</span>
+            </p>
+            <div id="slotVor"></div>
+          </div>
+          <div class="regler-gruppe" id="gKamera">
+            <h3 id="gKameraH">In der Kamera</h3>
+            <div id="slotKamera"></div>
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
+</div>
 
-<script>
-(function(){
-"use strict";
-
-/* ---------------- SCORM 1.2 (optional) + postMessage ---------------- */
-var API=null;
-function findAPI(w){var n=0;while(w.API==null&&w.parent!=null&&w.parent!=w&&n<10){n++;w=w.parent;}return w.API;}
-function initSCORM(){try{API=findAPI(window)||(window.opener?findAPI(window.opener):null);if(API){API.LMSInitialize("");}}catch(e){API=null;}}
-function report(score,status){
-  try{window.parent&&window.parent!==window&&window.parent.postMessage({type:"belichtung:progress",score:score,status:status},"*");}catch(e){}
-  if(!API)return;
-  try{API.LMSSetValue("cmi.core.score.raw",String(score));API.LMSSetValue("cmi.core.score.min","0");
-      API.LMSSetValue("cmi.core.score.max","100");API.LMSSetValue("cmi.core.lesson_status",status);API.LMSCommit("");}catch(e){}
-}
-window.addEventListener("load",initSCORM);
-window.addEventListener("unload",function(){if(API){try{API.LMSFinish("");}catch(e){}}});
-
-/* ---------------- Werte ---------------- */
-var AP=[2.8,4,5.6,8,11,16];
-var SH=[15,30,60,125,250,500,1000];             // als 1/x Sekunden
-var IS=[100,200,400,800,1600];
-var ND=[0,1,2,3,4,5,6];                          // Blendenstufen
-var NDL=["aus","0,3 · 1 Blende","0,6 · 2 Blenden","0,9 · 3 Blenden","1,2 · 4 Blenden","1,5 · 5 Blenden","1,8 · 6 Blenden"];
-var SH_VIDEO_IDX=1;                              // 1/50 s -> zwischen 1/30 und 1/60; siehe VIDEO_T
-var VIDEO_T=50;                                  // feste Belichtungszeit im Videomodus
-var EV_SUN=15;                                   // Sonnenlicht
-var EV_STUDIO=[6,7,8,9,10,11,12,13];             // Regelbereich Studio, Index 3 = EV 9 (Vorgabe)
-
-var FREEZE=125;         // ab dieser Zeit gilt Bewegung als eingefroren
-/* 1/125 statt 1/500: In der Praxis stehen Portraits je nach Bewegung schon ab 1/60 bis
-   1/125 s. Die frueher bei 1/250 gezeichnete Unschaerfe liegt jetzt bei 1/60 - und ab
-   1/125 gilt die Bewegung als eingefroren. Das schafft mehrere gueltige Loesungen. */
-var TOL=0.5;            // erlaubte Abweichung der Belichtung in Blendenstufen
-var DOF_OK=4;           // ab diesem Unschärfewert gilt der Hintergrund als unscharf
-
-var ICON_FOTO='<path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.8a1 1 0 0 1 .86-.48h5.68a1 1 0 0 1 .86.48L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.6"/>';
-var ICON_VIDEO='<rect x="2.5" y="7" width="13" height="10" rx="2.2"/><path d="M15.5 11.2l5-2.8v7.2l-5-2.8z"/><circle cx="8" cy="12" r="2.3"/>';
-
-var mode="foto", light="studio";
-var solvedFoto=false, solvedVideo=false;
-
-function $(id){return document.getElementById(id);}
-function chip(t,r){return '<span class="chip '+r+'">'+t+'</span>';}
-
-/* ---------------- Ansicht umschalten ---------------- */
-function setMode(m){
-  mode=m;
-  $('mFoto').setAttribute('aria-pressed',String(m==="foto"));
-  $('mVideo').setAttribute('aria-pressed',String(m==="video"));
-  var video=(m==="video");
-  $('rowNd').hidden=!video;
-  $('shLock').hidden=!video;
-  $('sh').disabled=video;
-  $('badgeIcon').innerHTML=video?ICON_VIDEO:ICON_FOTO;
-  if(video){
-    $('simTitle').textContent="Belichtung üben – Videokamera";
-    $('simSub').textContent="Das Fünfeck: Licht, ND-Filter, Blende, ISO – die Zeit ist gesperrt.";
-    $('badgeT').textContent="Du stellst eine Videokamera ein (FX30)";
-    $('badgeS').textContent="Bei 25 Bildern pro Sekunde liegt die Belichtungszeit auf 1/50 s fest. Sie steht dir nicht als Stellschraube zur Verfügung – dafür nimmst du Licht mit dem ND-Filter weg.";
-    $('ctrlH').textContent="Kamera einstellen – Blende, Zeit, ISO";
-    $('shHint').hidden=true;
-    $('lichtH').textContent="Lichtsituation und ND-Filter";
-    $('task').innerHTML="<b>Aufgabe:</b> Du drehst ein Interview. Belichte korrekt und halte den Hintergrund unscharf – ohne die Belichtungszeit anzufassen, denn die ist gesperrt.";
-    $('solved').textContent="Gelöst – richtig belichtet, Hintergrund unscharf, Zeit unangetastet.";
-  }else{
-    $('simTitle').textContent="Belichtung üben – Fotokamera";
-    $('simSub').textContent="Das Dreieck: Blende, Belichtungszeit, ISO – alle drei frei.";
-    $('badgeT').textContent="Du stellst eine Fotokamera ein";
-    $('badgeS').textContent="Alle drei Stellschrauben sind frei wählbar. Eine kurze Belichtungszeit friert Bewegung ein – diese Möglichkeit hast du beim Film nicht.";
-    $('ctrlH').textContent="Kamera einstellen – drei Stellschrauben";
-    $('shHint').hidden=false;
-    $('lichtH').textContent="Lichtsituation";
-    $('shHint').textContent="Kurze Zeit friert Bewegung ein, lange verwischt sie. Ab 1/125 s steht ein schwenkendes Motiv.";
-    $('task').innerHTML="<b>Aufgabe:</b> Belichte korrekt, friere die Bewegung ein und halte den Hintergrund unscharf.";
-    $('solved').textContent="Gelöst – alle drei Ziele erreicht.";
-  }
-  upd();
-}
-function setLight(l){
-  light=l;
-  $('lOut').setAttribute('aria-pressed',String(l==="out"));
-  $('lStu').setAttribute('aria-pressed',String(l==="studio"));
-  $('rowLight').style.display=(l==="studio")?"":"none";
-  upd();
-}
-
-/* ---------------- Simulation ---------------- */
-function upd(){
-  var video=(mode==="video");
-  var N=AP[+$('ap').value];
-  var td=video?VIDEO_T:SH[+$('sh').value];
-  var iso=IS[+$('is').value];
-  var nd=video?ND[+$('nd').value]:0;
-  var evScene=(light==="out")?EV_SUN:EV_STUDIO[+$('li').value];
-
-  /* Belichtungsfehler in Blendenstufen: positiv = zu hell */
-  var evSet=Math.log2((N*N)*td)-Math.log2(iso/100);
-  var err=(evScene-nd)-evSet;
-
-  /* Hintergrundunschärfe aus der Blende */
-  var dofB=Math.max(0,10*(1-(Math.log2(N)-Math.log2(1.4))/(Math.log2(16)-Math.log2(1.4))));
-  /* Bewegungsunschärfe. Im Video ist sie erwünscht und konstant (1/50 s). */
-  /* Im Video sitzt die Person im Interview - bei 1/50 s ist sie praktisch scharf.
-     Nur ein Hauch Unschaerfe, sonst kann sie sich nie vom Hintergrund abheben. */
-  var motB=video?0.7:Math.max(0,(Math.log2(FREEZE)-Math.log2(td))*3);
-  var noise=Math.min(.45,Math.max(0,Math.log2(iso/100)/6*.45));
-
-  /* Anzeige der Werte */
-  $('apV').textContent='f/'+N;
-  $('shV').textContent='1/'+td+' s';
-  $('isV').textContent=iso;
-  $('ndV').textContent=NDL[+$('nd').value];
-  var liIdx=+$('li').value, rel=EV_STUDIO[liIdx]-EV_STUDIO[3];
-  $('liV').textContent=(rel>0?'+':'')+rel+' Blenden';
-  $('liHint').textContent=rel===0?"Grundhelligkeit. Eine Stufe weiter = doppelt so hell = eine Blendenstufe mehr."
-                                 :"Eine Stufe = doppelt bzw. halb so hell = eine Blendenstufe.";
-
-  /* Szene zeichnen */
-  if(light==="out"){
-    $('bgSky').setAttribute('fill','#8fb6d4'); $('bgFloor').setAttribute('fill','#6f8f5e');
-    $('b1').setAttribute('fill','#b7d3e6'); $('b2').setAttribute('fill','#cfe4f2');
-    $('b3').setAttribute('fill','#9dbfd8'); $('b4').setAttribute('fill','#86a86f');
-    $('b5').setAttribute('fill','#cfe4f2');
-  }else{
-    $('bgSky').setAttribute('fill','#5a6b7c'); $('bgFloor').setAttribute('fill','#4c5c6b');
-    $('b1').setAttribute('fill','#8ba3ba'); $('b2').setAttribute('fill','#9db4c9');
-    $('b3').setAttribute('fill','#7e97ae'); $('b4').setAttribute('fill','#8ba3ba');
-    $('b5').setAttribute('fill','#9db4c9');
-  }
-  $('dofB').setAttribute('stdDeviation',dofB.toFixed(2));
-  $('motB').setAttribute('stdDeviation',motB.toFixed(2)+' 0');
-  $('noise').setAttribute('opacity',noise.toFixed(2));
-  var ex=$('expo');
-  ex.setAttribute('fill',err>0?'#ffffff':'#000000');
-  ex.setAttribute('opacity',Math.min(.85,Math.abs(err)*.18).toFixed(2));
-
-  /* Rückmeldung. Jede Marke sagt genau das, was im Bild zu sehen ist. */
-  var expoOK=Math.abs(err)<=TOL;
-  var dofOK=dofB>=DOF_OK;
-  var motOK=motB<0.5;                     /* nur wenn wirklich keine Unschärfe gezeichnet wird */
-  var fb=[];
-  fb.push(expoOK?chip('Belichtung korrekt','ok')
-    :(err>0?chip('überbelichtet (+'+err.toFixed(1)+' Blenden)','bad')
-           :chip('unterbelichtet ('+err.toFixed(1)+' Blenden)','bad')));
-  if(dofOK) fb.push(chip('Hintergrund unscharf','ok'));   /* keine Gegen-Marke: der Hinweis unten sagt, was zu tun ist */
-  if(video){
-    fb.push(chip('Bewegung wirkt filmisch · 1/50 s','info'));
-  }else{
-    fb.push(motOK?chip('Bewegung eingefroren','ok'):chip('Bewegungsunschärfe','warn'));
-  }
-  if(noise>=.3) fb.push(chip('sichtbares Rauschen','warn'));
-  $('chips').innerHTML=fb.join('');
-
-  /* Gezielter Hinweis statt Raten */
-  var tip="";
-  if(!expoOK&&err>0){
-    if(video&&light==="out"&&nd<6) tip="Zu hell – und die Zeit ist gesperrt. Nimm das Licht <strong>vor dem Objektiv</strong> weg: dreh den ND-Filter auf.";
-    else if(video&&light==="studio") tip="Zu hell. Du kannst hier das <strong>Studiolicht</strong> herunterregeln, den ND-Filter aufdrehen oder die Blende schließen.";
-    else if(!video&&light==="out") tip="Zu hell – draußen bei Sonne ist Licht im Überfluss da. Geh mit dem <strong>ISO ganz herunter</strong> und nimm die <strong>kürzeste Zeit</strong>; die Blende brauchst du für den unscharfen Hintergrund.";
-    else if(!video) tip="Zu hell. Kürzere Belichtungszeit, kleinere Blendenöffnung oder niedrigerer ISO-Wert.";
-    else tip="Zu hell, und der ND-Filter ist schon am Anschlag. Schließ die Blende weiter oder geh mit dem ISO herunter.";
-  }else if(!expoOK&&err<0){
-    tip=video?"Zu dunkel. ND-Filter zurücknehmen, Blende öffnen, ISO erhöhen – im Studio auch einfach mehr Licht."
-             :"Zu dunkel. Längere Belichtungszeit, offenere Blende oder höherer ISO-Wert. Achtung: Die längere Zeit kostet dich die eingefrorene Bewegung.";
-  }else if(!dofOK){
-    tip="Belichtung stimmt. Für einen unscharfen Hintergrund musst du die <strong>Blende öffnen</strong> – und den Lichtgewinn woanders wieder ausgleichen.";
-  }else if(!video&&!motOK){
-    tip="Belichtung und Hintergrund stimmen. Für eine eingefrorene Bewegung brauchst du eine <strong>kürzere Zeit</strong> – das fehlende Licht holst du über Blende oder ISO zurück.";
-  }
-  $('tip').innerHTML=tip; $('tip').hidden=(tip==="");
-
-  /* Ziel erreicht */
-  var ok=video?(expoOK&&dofOK):(expoOK&&dofOK&&motOK);
-  $('solved').hidden=!ok;
-  if(ok){
-    if(video&&!solvedVideo){solvedVideo=true;}
-    if(!video&&!solvedFoto){solvedFoto=true;}
-    var score=(solvedFoto?50:0)+(solvedVideo?50:0);
-    report(score,score>=100?"completed":"incomplete");
-  }
-}
-
-/* ---------------- Verdrahtung ---------------- */
-function start(m){$('intro').hidden=true;$('sim').hidden=false;setMode(m);window.scrollTo(0,0);}
-$('startFoto').addEventListener('click',function(){start("foto");});
-$('startVideo').addEventListener('click',function(){start("video");});
-$('mIntro').addEventListener('click',function(){$('sim').hidden=true;$('intro').hidden=false;window.scrollTo(0,0);});
-$('mFoto').addEventListener('click',function(){setMode("foto");});
-$('mVideo').addEventListener('click',function(){setMode("video");});
-$('lOut').addEventListener('click',function(){setLight("out");});
-$('lStu').addEventListener('click',function(){setLight("studio");});
-['ap','sh','is','nd','li'].forEach(function(id){$(id).addEventListener('input',upd);});
-setLight("studio");
-setMode("foto");
-})();
-</script>
+<script src="js/model.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
