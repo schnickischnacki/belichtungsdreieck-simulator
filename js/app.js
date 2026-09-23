@@ -136,7 +136,7 @@
         html += '<button type="button" class="tab" data-auftrag="' + a.id + '" aria-current="false">' +
           '<span class="nr">' + a.nr + "</span>" +
           ikon(a.ort === "see" ? I.sonne : I.studio, 'class="ort-icon"') +
-          '<span class="tab-text">' + t.tab + "<small>" + t.klein + "</small></span>" +
+          '<span class="tab-text"><span class="lang">' + t.tab + '</span><span class="kurz">' + (a.ort === "see" ? "See" : "Studio") + "</span><small>" + t.klein + "</small></span>" +
           '<span class="erledigt" title="geschafft">' + ikon(I.haken) + "</span></button>";
       });
       html += "</div></div>";
@@ -273,9 +273,49 @@
     $("mmZeiger").style.left = ((klemme(r.fehler3, -6, 6) + 6) / 12 * 100) + "%";
     document.querySelector(".hud").classList.toggle("blinkt", Math.abs(r.fehler3) > 6);
 
-    var ziele = [[r.expoOK, I.sonne], [r.dofOK, I.blende], [r.bewOK, video ? I.schloss : I.hand]];
-    $("hudZiele").innerHTML = ziele.map(function (x) { return '<b class="' + (x[0] ? "ok" : "") + '">' + ikon(x[1]) + "</b>"; }).join("");
+    var stand = { expo: r.expoOK, dof: r.dofOK, bew: r.bewOK };
+    Array.prototype.forEach.call($("hudZiele").querySelectorAll(".ziel-knopf"), function (k) {
+      var ok = stand[k.getAttribute("data-ziel")];
+      k.classList.toggle("ok", !!ok);
+      k.setAttribute("aria-label", k.getAttribute("data-name") + (ok ? " – erreicht" : " – noch nicht erreicht") + ". Zeigt die zugehörigen Regler.");
+    });
     $("bild").classList.toggle("ist-geloest", r.geloest);
+  }
+
+  /* Die drei Zielzeichen im Bild: Name nach kurzem Verweilen, und ein Klick
+     lässt die zugehörigen Regler kurz aufpulsieren – so wird sichtbar, welche
+     Stellschraube an welchem Ziel hängt. */
+  function baueHudZiele(a) {
+    var video = a.kamera === "video";
+    var alle = verstellbar(a);
+    var ziele = [
+      { id: "expo", icon: I.sonne, name: "Richtig belichtet", regler: alle,
+        zeile: "Stellschrauben: " + alle.map(function (k) { return REGLER[k].name; }).join(", ") },
+      { id: "dof", icon: I.blende, name: "Hintergrund unscharf", regler: ["ap"], zeile: "Stellschraube: Blende" },
+      video
+        ? { id: "bew", icon: I.schloss, name: "Zeit bleibt bei 1/50 s", regler: ["sh"], zeile: "fest bei 25 Bildern pro Sekunde" }
+        : { id: "bew", icon: I.hand, name: "Hand eingefroren", regler: ["sh"], zeile: "Stellschraube: Belichtungszeit" }
+    ];
+    $("hudZiele").innerHTML = ziele.map(function (x) {
+      return '<button type="button" class="ziel-knopf" data-ziel="' + x.id + '" data-name="' + x.name + '" data-regler="' + x.regler.join(" ") + '">' +
+        ikon(x.icon) + '<span class="ziel-tipp" aria-hidden="true"><b>' + x.name + "</b>" + x.zeile + "</span></button>";
+    }).join("");
+    Array.prototype.forEach.call($("hudZiele").querySelectorAll(".ziel-knopf"), function (k) {
+      k.addEventListener("click", function () { zeigeRegler(k.getAttribute("data-regler").split(" ")); });
+    });
+  }
+
+  function zeigeRegler(keys) {
+    var zeilen = keys.map(function (k) { return document.querySelector('.regler[data-regler="' + k + '"]'); }).filter(Boolean);
+    zeilen.forEach(function (el) { el.classList.remove("hervor"); void el.offsetWidth; el.classList.add("hervor"); });
+    if (!zeilen.length) return;
+    /* Liegt der erste Regler außer Sicht (auf dem Handy unter dem stehenden Bild),
+       dorthin scrollen – knapp unter das Bild. */
+    var oben = window.innerWidth < 1000 ? $("buehneHalter").getBoundingClientRect().bottom : 0;
+    var box = zeilen[0].getBoundingClientRect();
+    if (box.top < oben + 8 || box.bottom > window.innerHeight - 8) {
+      window.scrollBy({ top: box.top - oben - 12, behavior: "smooth" });
+    }
   }
 
   /* Laufender Timecode im Videomodus, sobald aufgenommen wird */
@@ -716,6 +756,7 @@
     baueSzene(a);
     baueRegler(a);
     baueZiele(a);
+    baueHudZiele(a);
     $("wissen-mm").hidden = true;
     $("aKicker").textContent = "Auftrag " + a.nr + " · " + (a.kamera === "foto" ? "Fotokamera" : "Videokamera") + " · " + (a.ort === "see" ? "draußen" : "Studio");
     $("aTitel").textContent = TEXT[id].titel;

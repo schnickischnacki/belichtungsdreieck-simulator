@@ -69,8 +69,10 @@
   <main id="sim" class="sim" hidden>
     <nav class="auftraege" aria-label="Aufträge" id="auftraege"></nav>
 
+    <!-- Bild, Regler, Auftrag als eigene Rasterfelder: am Laptop Bild und Auftrag
+         links, Regler rechts; auf dem Handy Bild, direkt darunter die Regler,
+         dann der Auftrag. Das Bild bleibt beim Scrollen oben stehen. -->
     <div class="spalten">
-      <div class="links">
         <div class="buehne-halter" id="buehneHalter">
           <div class="bild" id="bild" role="img" aria-label="Simuliertes Kamerabild">
             <div class="belichtung" id="belichtung">
@@ -83,15 +85,15 @@
             <div class="korn" id="korn" aria-hidden="true"></div>
             <div class="blitz" id="blitz" aria-hidden="true"></div>
 
-            <div class="hud" aria-hidden="true">
+            <div class="hud">
               <div class="hud-oben">
-                <span class="hud-modus" id="hudModus"></span>
-                <span class="hud-geschafft" id="hudGeschafft">
+                <span class="hud-modus" id="hudModus" aria-hidden="true"></span>
+                <span class="hud-geschafft" id="hudGeschafft" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Alle Ziele erreicht</span>
                 <span class="hud-ziele" id="hudZiele"></span>
               </div>
-              <div class="af" id="af"><i></i><i></i><i></i><i></i></div>
-              <div class="hud-unten">
+              <div class="af" id="af" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              <div class="hud-unten" aria-hidden="true">
                 <span id="hudZeit"></span>
                 <span id="hudBlende"></span>
                 <span id="hudIso"></span>
@@ -113,9 +115,7 @@
           <div class="hinweis" id="hinweis" hidden></div>
           <div class="geschafft" id="geschafft" hidden></div>
         </section>
-      </div>
 
-      <div class="rechts">
         <section class="karte regler-karte" aria-labelledby="rTitel">
           <header class="regler-kopf-karte">
             <div class="poly" id="rPoly" aria-hidden="true"></div>
@@ -137,7 +137,6 @@
             <div id="slotKamera"></div>
           </div>
         </section>
-      </div>
     </div>
   </main>
 </div>
