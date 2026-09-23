@@ -166,9 +166,11 @@ svg{flex:0 0 auto}
 @container (max-width:420px){.hud-geschafft span{display:none}}
 .hud-ziele{display:inline-flex;gap:.35em;margin-left:auto;pointer-events:auto}
 .ziel-knopf{appearance:none;position:relative;cursor:pointer;padding:0;width:1.9em;height:1.9em;border-radius:50%;display:grid;place-items:center;
-  background:rgba(20,24,30,.55);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:inherit;transition:transform .12s,background .15s}
+  background:rgba(20,24,30,.55);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:inherit;transition:background .15s,border-color .15s}
 .ziel-knopf::before{content:"";position:absolute;inset:-6px;border-radius:50%}   /* größere Trefferfläche */
-.ziel-knopf:hover{transform:scale(1.08)}
+/* Hover ohne Größenänderung: eine Skalierung verschob die Trefferfläche, das Zeichen zitterte am Rand */
+.ziel-knopf:hover{background:rgba(20,24,30,.82);border-color:#fff}
+.ziel-knopf.ok:hover{background:rgba(31,107,63,1);border-color:#fff}
 .ziel-knopf:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .ziel-knopf.ok{background:rgba(31,107,63,.95);border-color:#8fd1a8}
 .ziel-knopf svg{width:1.15em;height:1.15em;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
